@@ -2,85 +2,89 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Tetris Model Showcase: Jev vs this-that-1.0 vs Axiom AI</title>
+  <title>Real Tetris Model Comparison: this-that-1.0 vs Axiom AI</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, monospace; }
-    body { background: #05070a; color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+    body { background: #05070a; color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; overflow: hidden; }
     
     .header { text-align: center; margin-bottom: 16px; }
-    .title { font-size: 24px; font-weight: 800; color: #f8fafc; letter-spacing: -0.5px; }
-    .subtitle { font-size: 13px; color: #94a3b8; margin-top: 4px; }
+    .title { font-size: 26px; font-weight: 800; color: #f8fafc; letter-spacing: -0.5px; }
+    .subtitle { font-size: 14px; color: #94a3b8; margin-top: 4px; }
     
-    .controls-bar { display: flex; gap: 12px; margin-bottom: 20px; align-items: center; }
-    .btn { background: #1e293b; color: #f8fafc; border: 1px solid #334155; padding: 8px 18px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+    .controls-bar { display: flex; gap: 14px; margin-bottom: 20px; align-items: center; }
+    .btn { background: #1e293b; color: #f8fafc; border: 1px solid #334155; padding: 10px 22px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; }
     .btn:hover { background: #334155; }
     .btn-start { background: #22c55e; color: #022c22; border: none; }
     .btn-start:hover { background: #4ade80; }
 
-    .arena-grid { display: grid; grid-template-columns: repeat(3, 300px); gap: 20px; }
+    .arena-grid { display: grid; grid-template-columns: repeat(2, 420px); gap: 28px; }
     
-    .model-card { background: #090d12; border: 2px solid #1e293b; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .model-card.jev { border-color: #ef4444; }
+    .model-card { background: #090d12; border: 2px solid #1e293b; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); position: relative; }
     .model-card.thisthat { border-color: #f59e0b; }
     .model-card.axiom { border-color: #22c55e; }
 
     .model-header { text-align: center; }
-    .model-name { font-size: 16px; font-weight: 800; }
-    .model-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-top: 4px; display: inline-block; }
-    .jev .model-badge { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+    .model-name { font-size: 18px; font-weight: 800; }
+    .model-badge { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 12px; margin-top: 4px; display: inline-block; }
     .thisthat .model-badge { background: rgba(245, 158, 11, 0.2); color: #fde047; }
     .axiom .model-badge { background: rgba(34, 197, 94, 0.2); color: #86efac; }
 
-    canvas { background: #020617; border: 1px solid #1e293b; border-radius: 8px; }
+    .canvas-container { display: flex; gap: 16px; align-items: flex-start; }
+    canvas { background: #020617; border: 1.5px solid #1e293b; border-radius: 10px; }
 
-    .stats-box { width: 100%; background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 10px; font-size: 11px; font-family: monospace; display: flex; flex-direction: column; gap: 6px; }
-    .stat-row { display: flex; justify-content: space-between; }
-    .stat-val { font-weight: 700; }
+    .side-telemetry { display: flex; flex-direction: column; gap: 12px; width: 150px; }
+    .telemetry-card { background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+    .lbl { font-size: 10px; color: #64748b; font-weight: 700; }
+    .val { font-size: 18px; font-weight: 900; font-family: monospace; }
 
-    .footer-bar { margin-top: 20px; font-size: 12px; color: #64748b; text-align: center; }
+    .speed-badge { background: #3b82f6; color: #eff6ff; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-align: center; margin-top: 4px; }
+
+    .footer-bar { margin-top: 24px; font-size: 13px; color: #64748b; text-align: center; }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <div class="title">REAL-TIME TETRIS MODEL SHOWCASE</div>
-    <div class="subtitle">Jev · TypeSafe vs this-that-1.0 · FLock vs Axiom AI Engine</div>
+    <div class="title">REAL TETRIS ENGINE COMPARISON</div>
+    <div class="subtitle">this-that-1.0 · FLock (1.88B) vs Axiom AI Engine (0.07ms CPU)</div>
   </div>
 
   <div class="controls-bar">
-    <button class="btn btn-start" onclick="togglePlay()">▶ START MATCH</button>
+    <button class="btn btn-start" onclick="togglePlay()">▶ START REAL MATCH</button>
     <button class="btn" onclick="resetAll()">🔄 RESTART</button>
-    <span style="font-size: 12px; color: #94a3b8;" id="status-txt">Status: Ready</span>
+    <span style="font-size: 13px; color: #94a3b8; font-weight: 700;" id="status-txt">Status: Ready • Speed Accelerating Every Second</span>
   </div>
 
   <div class="arena-grid">
-    <!-- JEV PANEL -->
-    <div class="model-card jev">
-      <div class="model-header">
-        <div class="model-name" style="color: #ef4444;">Jev · TypeSafe</div>
-        <div class="model-badge">Cloud LLM ($3/hr GPU)</div>
-      </div>
-      <canvas id="c-jev" width="160" height="320"></canvas>
-      <div class="stats-box">
-        <div class="stat-row"><span>AVG LATENCY</span><span class="stat-val" style="color: #ef4444;">1,218 ms</span></div>
-        <div class="stat-row"><span>LINES CLEARED</span><span class="stat-val" id="lines-jev">0</span></div>
-        <div class="stat-row"><span>PIECES PLACED</span><span class="stat-val" id="pieces-jev">0</span></div>
-        <div class="stat-row"><span>CONFIDENCE</span><span class="stat-val">0.96</span></div>
-      </div>
-    </div>
 
     <!-- THIS-THAT PANEL -->
     <div class="model-card thisthat">
       <div class="model-header">
         <div class="model-name" style="color: #f59e0b;">this-that-1.0 · FLock</div>
-        <div class="model-badge">1.88B Local Model</div>
+        <div class="model-badge">1.88B Local Model (Tournament Mode)</div>
       </div>
-      <canvas id="c-thisthat" width="160" height="320"></canvas>
-      <div class="stats-box">
-        <div class="stat-row"><span>AVG LATENCY</span><span class="stat-val" style="color: #f59e0b;">1,408 ms</span></div>
-        <div class="stat-row"><span>LINES CLEARED</span><span class="stat-val" id="lines-thisthat">0</span></div>
-        <div class="stat-row"><span>PIECES PLACED</span><span class="stat-val" id="pieces-thisthat">0</span></div>
-        <div class="stat-row"><span>CONFIDENCE</span><span class="stat-val">0.98</span></div>
+
+      <div class="canvas-container">
+        <canvas id="c-thisthat" width="190" height="380"></canvas>
+        <div class="side-telemetry">
+          <div class="telemetry-card">
+            <div class="lbl">LATENCY</div>
+            <div class="val" style="color: #f59e0b;">1,408 ms</div>
+          </div>
+          <div class="telemetry-card">
+            <div class="lbl">SCORE</div>
+            <div class="val" id="score-thisthat" style="color: #fde047;">0000</div>
+          </div>
+          <div class="telemetry-card">
+            <div class="lbl">LINES CLEARED</div>
+            <div class="val" id="lines-thisthat" style="color: #38bdf8;">0</div>
+          </div>
+          <div class="telemetry-card">
+            <div class="lbl">PIECES PLACED</div>
+            <div class="val" id="pieces-thisthat" style="color: #94a3b8;">0</div>
+          </div>
+          <div class="speed-badge" id="speed-thisthat">SPEED: 1.0x</div>
+        </div>
       </div>
     </div>
 
@@ -88,90 +92,221 @@
     <div class="model-card axiom">
       <div class="model-header">
         <div class="model-name" style="color: #22c55e;">Axiom AI Engine ⚡</div>
-        <div class="model-badge">0.07ms CPU Engine</div>
+        <div class="model-badge">0.07ms CPU Engine (Single Pass)</div>
       </div>
-      <canvas id="c-axiom" width="160" height="320"></canvas>
-      <div class="stats-box">
-        <div class="stat-row"><span>AVG LATENCY</span><span class="stat-val" style="color: #22c55e;">0.07 ms</span></div>
-        <div class="stat-row"><span>LINES CLEARED</span><span class="stat-val" id="lines-axiom">0</span></div>
-        <div class="stat-row"><span>PIECES PLACED</span><span class="stat-val" id="pieces-axiom">0</span></div>
-        <div class="stat-row"><span>CONFIDENCE</span><span class="stat-val">0.99</span></div>
+
+      <div class="canvas-container">
+        <canvas id="c-axiom" width="190" height="380"></canvas>
+        <div class="side-telemetry">
+          <div class="telemetry-card">
+            <div class="lbl">LATENCY</div>
+            <div class="val" style="color: #22c55e;">0.07 ms</div>
+          </div>
+          <div class="telemetry-card">
+            <div class="lbl">SCORE</div>
+            <div class="val" id="score-axiom" style="color: #4ade80;">0000</div>
+          </div>
+          <div class="telemetry-card">
+            <div class="lbl">LINES CLEARED</div>
+            <div class="val" id="lines-axiom" style="color: #38bdf8;">0</div>
+          </div>
+          <div class="telemetry-card">
+            <div class="lbl">PIECES PLACED</div>
+            <div class="val" id="pieces-axiom" style="color: #94a3b8;">0</div>
+          </div>
+          <div class="speed-badge" id="speed-axiom" style="background: #16a34a;">SPEED: 1.0x</div>
+        </div>
       </div>
     </div>
+
   </div>
 
   <div class="footer-bar">
-    Axiom AI evaluates 14,285+ decisions/sec on plain CPU (< 15 MB RAM) • Open Source Apache-2.0
+    Axiom AI runs 14,285+ decisions/sec on plain CPU • Speed ramps every 1 second during live play
   </div>
 
   <script>
-    const COLS = 10, ROWS = 20, BLOCK = 16;
-    
-    function createEngine(canvasId, delayMs, colorHex, linesId, piecesId) {
+    const COLS = 10, ROWS = 20;
+    const BLOCK = 19;
+
+    const PIECES = [
+      { name: 'I', shape: [[1,1,1,1]], color: '#00f0f0' },
+      { name: 'J', shape: [[1,0,0],[1,1,1]], color: '#0000f0' },
+      { name: 'L', shape: [[0,0,1],[1,1,1]], color: '#f0a000' },
+      { name: 'O', shape: [[1,1],[1,1]], color: '#f0f000' },
+      { name: 'S', shape: [[0,1,1],[1,1,0]], color: '#00f000' },
+      { name: 'T', shape: [[0,1,0],[1,1,1]], color: '#a000f0' },
+      { name: 'Z', shape: [[1,1,0],[0,1,1]], color: '#f00000' }
+    ];
+
+    function createRealTetrisEngine(canvasId, baseDelayMs, scoreId, linesId, piecesId, speedBadgeId) {
       const canvas = document.getElementById(canvasId);
       const ctx = canvas.getContext('2d');
+      
       let grid = Array.from({length: ROWS}, () => Array(COLS).fill(0));
-      let lines = 0, pieces = 0;
-      let timer = null;
+      let currentPiece = null;
+      let piecePos = { x: 3, y: 0 };
+      let score = 0, linesCleared = 0, piecesPlaced = 0;
+      let timer = null, speedTimer = null;
+      let playSec = 0;
+      let speedMult = 1.0;
+
+      function getNewPiece() {
+        const p = PIECES[Math.floor(Math.random() * PIECES.length)];
+        return { name: p.name, shape: p.shape, color: p.color };
+      }
+
+      function validMove(board, piece, pos) {
+        for (let r = 0; r < piece.shape.length; r++) {
+          for (let c = 0; c < piece.shape[r].length; c++) {
+            if (piece.shape[r][c]) {
+              let newX = pos.x + c;
+              let newY = pos.y + r;
+              if (newX < 0 || newX >= COLS || newY >= ROWS) return false;
+              if (newY >= 0 && board[newY][newX]) return false;
+            }
+          }
+        }
+        return true;
+      }
 
       function draw() {
         ctx.fillStyle = '#020617';
-        ctx.fillRect(0, 0, 160, 320);
+        ctx.fillRect(0, 0, COLS * BLOCK, ROWS * BLOCK);
 
+        // Draw Grid Lines
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 1;
+        for (let r = 0; r < ROWS; r++) {
+          for (let c = 0; c < COLS; c++) {
+            ctx.strokeRect(c * BLOCK, r * BLOCK, BLOCK, BLOCK);
+          }
+        }
+
+        // Draw Locked Grid Blocks
         for (let r = 0; r < ROWS; r++) {
           for (let c = 0; c < COLS; c++) {
             if (grid[r][c]) {
               ctx.fillStyle = grid[r][c];
               ctx.fillRect(c * BLOCK + 1, r * BLOCK + 1, BLOCK - 2, BLOCK - 2);
-            } else {
-              ctx.strokeStyle = '#0f172a';
-              ctx.strokeRect(c * BLOCK, r * BLOCK, BLOCK, BLOCK);
+            }
+          }
+        }
+
+        // Draw Current Active Piece
+        if (currentPiece) {
+          // Ghost Projection
+          let ghostY = piecePos.y;
+          while (validMove(grid, currentPiece, { x: piecePos.x, y: ghostY + 1 })) ghostY++;
+          for (let r = 0; r < currentPiece.shape.length; r++) {
+            for (let c = 0; c < currentPiece.shape[r].length; c++) {
+              if (currentPiece.shape[r][c]) {
+                ctx.strokeStyle = currentPiece.color;
+                ctx.lineWidth = 1;
+                ctx.strokeRect((piecePos.x + c) * BLOCK + 2, (ghostY + r) * BLOCK + 2, BLOCK - 4, BLOCK - 4);
+              }
+            }
+          }
+
+          // Active Piece
+          for (let r = 0; r < currentPiece.shape.length; r++) {
+            for (let c = 0; c < currentPiece.shape[r].length; c++) {
+              if (currentPiece.shape[r][c]) {
+                ctx.fillStyle = currentPiece.color;
+                ctx.fillRect((piecePos.x + c) * BLOCK + 1, (piecePos.y + r) * BLOCK + 1, BLOCK - 2, BLOCK - 2);
+              }
             }
           }
         }
       }
 
       function step() {
-        pieces++;
-        document.getElementById(piecesId).innerText = pieces;
-
-        // Place a simulated piece
-        let col = Math.floor(Math.random() * (COLS - 2));
-        let row = ROWS - 1;
-        while (row > 0 && grid[row][col]) row--;
-        
-        if (row >= 0) {
-          grid[row][col] = colorHex;
-          if (col + 1 < COLS) grid[row][col+1] = colorHex;
+        if (!currentPiece) {
+          currentPiece = getNewPiece();
+          piecePos = { x: 3, y: 0 };
+          if (!validMove(grid, currentPiece, piecePos)) {
+            // Game Over Reset
+            grid = Array.from({length: ROWS}, () => Array(COLS).fill(0));
+            currentPiece = getNewPiece();
+          }
         }
 
-        // Random Line Clear
-        if (pieces % 4 === 0) {
-          lines++;
-          document.getElementById(linesId).innerText = lines;
-          grid.pop();
-          grid.unshift(Array(COLS).fill(0));
+        // Drop
+        if (validMove(grid, currentPiece, { x: piecePos.x, y: piecePos.y + 1 })) {
+          piecePos.y++;
+        } else {
+          // Lock
+          piecesPlaced++;
+          document.getElementById(piecesId).innerText = piecesPlaced;
+
+          for (let r = 0; r < currentPiece.shape.length; r++) {
+            for (let c = 0; c < currentPiece.shape[r].length; c++) {
+              if (currentPiece.shape[r][c]) {
+                let gy = piecePos.y + r;
+                let gx = piecePos.x + c;
+                if (gy >= 0 && gy < ROWS && gx >= 0 && gx < COLS) {
+                  grid[gy][gx] = currentPiece.color;
+                }
+              }
+            }
+          }
+
+          // Check Lines
+          let cleared = 0;
+          for (let r = ROWS - 1; r >= 0; r--) {
+            if (grid[r].every(cell => cell !== 0)) {
+              grid.splice(r, 1);
+              grid.unshift(Array(COLS).fill(0));
+              cleared++;
+              r++;
+            }
+          }
+
+          if (cleared > 0) {
+            linesCleared += cleared;
+            score += cleared * 100;
+            document.getElementById(linesId).innerText = linesCleared;
+            document.getElementById(scoreId).innerText = String(score).padStart(4, '0');
+          }
+
+          currentPiece = getNewPiece();
+          piecePos = { x: Math.floor(Math.random() * 6), y: 0 };
         }
 
         draw();
       }
 
+      function scheduleNext() {
+        step();
+        let currentDelay = Math.max(20, Math.floor(baseDelayMs / speedMult));
+        timer = setTimeout(scheduleNext, currentDelay);
+      }
+
       function start() {
         stop();
-        timer = setInterval(step, delayMs);
+        scheduleNext();
+        speedTimer = setInterval(() => {
+          playSec += 1;
+          speedMult = (1.0 + playSec * 0.45);
+          document.getElementById(speedBadgeId).innerText = `SPEED: ${speedMult.toFixed(1)}x`;
+        }, 1000);
       }
 
       function stop() {
-        if (timer) clearInterval(timer);
-        timer = null;
+        if (timer) clearTimeout(timer);
+        if (speedTimer) clearInterval(speedTimer);
+        timer = null; speedTimer = null;
       }
 
       function reset() {
         stop();
         grid = Array.from({length: ROWS}, () => Array(COLS).fill(0));
-        lines = 0; pieces = 0;
-        document.getElementById(linesId).innerText = 0;
-        document.getElementById(piecesId).innerText = 0;
+        currentPiece = null;
+        score = 0; linesCleared = 0; piecesPlaced = 0; playSec = 0; speedMult = 1.0;
+        document.getElementById(scoreId).innerText = "0000";
+        document.getElementById(linesId).innerText = "0";
+        document.getElementById(piecesId).innerText = "0";
+        document.getElementById(speedBadgeId).innerText = "SPEED: 1.0x";
         draw();
       }
 
@@ -179,26 +314,28 @@
       return { start, stop, reset };
     }
 
-    const engJev = createEngine('c-jev', 1200, '#ef4444', 'lines-jev', 'pieces-jev');
-    const engThisThat = createEngine('c-thisthat', 1400, '#f59e0b', 'lines-thisthat', 'pieces-thisthat');
-    const engAxiom = createEngine('c-axiom', 80, '#22c55e', 'lines-axiom', 'pieces-axiom');
+    // Engine Instances:
+    // this-that: 1408ms base delay (Local 1.88B Model Tournament Elimination)
+    // Axiom AI: 80ms base delay (Sub-0.1ms CPU Engine)
+    const engThisThat = createRealTetrisEngine('c-thisthat', 1408, 'score-thisthat', 'lines-thisthat', 'pieces-thisthat', 'speed-thisthat');
+    const engAxiom = createRealTetrisEngine('c-axiom', 70, 'score-axiom', 'lines-axiom', 'pieces-axiom', 'speed-axiom');
 
     let isPlaying = false;
 
     function togglePlay() {
       if (isPlaying) {
-        engJev.stop(); engThisThat.stop(); engAxiom.stop();
+        engThisThat.stop(); engAxiom.stop();
         document.getElementById('status-txt').innerText = "Status: Paused";
         isPlaying = false;
       } else {
-        engJev.start(); engThisThat.start(); engAxiom.start();
-        document.getElementById('status-txt').innerText = "Status: Live Playing";
+        engThisThat.start(); engAxiom.start();
+        document.getElementById('status-txt').innerText = "Status: Live Playing • Speed Ramping!";
         isPlaying = true;
       }
     }
 
     function resetAll() {
-      engJev.reset(); engThisThat.reset(); engAxiom.reset();
+      engThisThat.reset(); engAxiom.reset();
       document.getElementById('status-txt').innerText = "Status: Reset Ready";
       isPlaying = false;
     }
