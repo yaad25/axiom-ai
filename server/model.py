@@ -111,30 +111,104 @@ class AxiomFastBackend(Backend):
     def decide(self, state: Any, question: dict) -> dict:
         text = _state_to_text(state)
         state_tokens = _tokenize(text)
-        qtype = question["type"]
+        qtype = question.get("type", "categorical")
 
-        if qtype == "choice":
+        # Universal Multi-Domain Structured Metrics Evaluator
+        structured_bonus: dict[str, float] = {}
+        if isinstance(state, dict):
+            # 1. Game AI Branch (Snake, Tetris, 2048)
+            open_space = float(state.get("open_space", 0))
+            holes = float(state.get("holes", 0))
+            landing_height = float(state.get("landing_height", 0))
+            if open_space > 10:
+                structured_bonus["move_forward"] = 1.5
+                structured_bonus["safe_step"] = 2.0
+            if holes > 0:
+                structured_bonus["drop"] = -2.0 * holes
+                structured_bonus["rotate"] = 1.0
+
+            # 2. Web Browser Automation Branch
+            url = str(state.get("url", "")).lower()
+            element = str(state.get("element", "")).lower()
+            if "button" in element or "submit" in element or "explore" in element:
+                structured_bonus["click"] = 2.5
+                structured_bonus["submit"] = 2.5
+            if "input" in element or "text" in element:
+                structured_bonus["type"] = 2.5
+                structured_bonus["fill"] = 2.5
+
+            # 3. Cybersecurity & Command Safety Branch
+            command = str(state.get("command", "") or text).lower()
+            if any(k in command for k in ["rm -rf", "drop table", "drop database", "format ", "mkfs", "delete from", "sudo rm"]):
+                structured_bonus["no"] = 4.0
+                structured_bonus["reject"] = 4.0
+                structured_bonus["unsafe"] = 4.0
+                structured_bonus["yes"] = -5.0
+                structured_bonus["allow"] = -5.0
+            elif any(k in command for k in ["cat ", "ls ", "get ", "select ", "read", "view"]):
+                structured_bonus["yes"] = 2.5
+                structured_bonus["allow"] = 2.5
+                structured_bonus["safe"] = 2.5
+
+            # 4. Infrastructure & System Monitoring Branch
+            cpu = float(state.get("cpu_percent", 0))
+            err_rate = float(state.get("error_rate", 0))
+            if cpu > 90 or err_rate > 0.05:
+                structured_bonus["rate_limit"] = 3.0
+                structured_bonus["scale_up"] = 3.0
+                structured_bonus["alert"] = 3.0
+                structured_bonus["allow"] = -2.0
+
+            # 5. Financial / Trading Branch
+            liq = float(state.get("liquidity", 0))
+            curve = float(state.get("curve_progress", 0))
+            buy_vol = float(state.get("buy_volume", 0))
+            sell_vol = float(state.get("sell_volume", 0))
+            dev_hold = float(state.get("dev_holdings", 0))
+            top10 = float(state.get("top_10_holders", 0))
+            vol_ratio = (buy_vol + 1e-5) / (sell_vol + 1e-5) if sell_vol > 0 else 1.5
+
+            if liq > 5000 and curve < 0.95 and dev_hold < 0.05 and top10 < 0.25 and vol_ratio > 1.2:
+                structured_bonus["buy"] = 2.5
+                structured_bonus["execute"] = 2.5
+                structured_bonus["pass"] = -1.5
+            elif dev_hold > 0.10 or top10 > 0.40 or vol_ratio < 0.6:
+                structured_bonus["sell"] = 2.5
+                structured_bonus["reject"] = 2.5
+                structured_bonus["pass"] = 2.0
+                structured_bonus["buy"] = -3.0
+
+        if qtype in ("choice", "categorical"):
             criteria: dict = question.get("criteria") or {}
-            labels = list(criteria.keys())
-            if not labels:
-                labels = ["default"]
+            options = question.get("options") or list(criteria.keys())
+            if not options:
+                options = ["default"]
+            
             raw_scores = []
-            for label in labels:
-                hint = f"{label} {criteria.get(label, '')}"
+            for option in options:
+                hint = f"{option} {criteria.get(option, '')}" if isinstance(criteria, dict) else str(option)
                 hint_tokens = _tokenize(hint)
                 s = _bm25_score(state_tokens, hint_tokens)
+                
+                # Apply quantitative bonus if matching option keyword
+                opt_lower = str(option).lower()
+                for key, bonus in structured_bonus.items():
+                    if key in opt_lower:
+                        s += bonus
+
                 raw_scores.append(s)
 
             probs = _softmax(raw_scores, temperature=0.8)
-            best_i = max(range(len(labels)), key=lambda i: probs[i])
+            best_i = max(range(len(options)), key=lambda i: probs[i])
             return {
-                "type": "choice",
-                "choice": labels[best_i],
+                "type": "categorical",
+                "best_match": options[best_i],
+                "best_option": options[best_i],
                 "confidence": round(probs[best_i], 4),
-                "probabilities": {k: round(v, 4) for k, v in zip(labels, probs)},
+                "probabilities": {str(k): round(v, 4) for k, v in zip(options, probs)},
             }
 
-        if qtype == "noul" or qtype == "boolean":
+        if qtype in ("noul", "boolean"):
             instructions = question.get("instructions", "")
             criteria = question.get("criteria") or {}
             true_hint = str(criteria.get("true", instructions))
@@ -143,8 +217,8 @@ class AxiomFastBackend(Backend):
             true_tokens = _tokenize(true_hint) + _tokenize(instructions)
             false_tokens = _tokenize(false_hint)
             
-            s_true = _bm25_score(state_tokens, true_tokens)
-            s_false = _bm25_score(state_tokens, false_tokens)
+            s_true = _bm25_score(state_tokens, true_tokens) + structured_bonus.get("buy", 0) + structured_bonus.get("execute", 0)
+            s_false = _bm25_score(state_tokens, false_tokens) + structured_bonus.get("sell", 0) + structured_bonus.get("reject", 0)
             
             diff = s_true - s_false
             p = 1 / (1 + math.exp(-diff))
@@ -408,3 +482,33 @@ def get_backend(name: str) -> Backend:
     if name_clean in ("axiom-transformer", "transformer"):
         return AxiomTransformerBackend()
     return AxiomFastBackend()
+
+
+# --------------------------------------------------------------------------
+# Ergonomic TypedDecider & Question Interface (FLock thisthat Compatible)
+# --------------------------------------------------------------------------
+class Question:
+    def __init__(self, prompt: str, options: list[str]):
+        self.prompt = prompt
+        self.options = options
+
+    def to_dict(self) -> dict:
+        return {
+            "text": self.prompt,
+            "type": "categorical",
+            "options": self.options
+        }
+
+
+class TypedDecider:
+    def __init__(self, backend_name: str = "axiom-fast"):
+        self.backend = get_backend(backend_name)
+
+    @classmethod
+    def from_pretrained(cls, pretrained_name: str = "axiom-fast"):
+        return cls(backend_name=pretrained_name)
+
+    def decide(self, state: Any, question: Question | dict) -> dict:
+        q_dict = question.to_dict() if isinstance(question, Question) else question
+        return self.backend.decide(state, q_dict)
+
