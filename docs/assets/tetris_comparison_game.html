@@ -52,7 +52,7 @@
 
   <div class="header">
     <div class="title">REAL TETRIS AI MODEL COMPARISON</div>
-    <div class="subtitle">Step-by-Step Left/Right Steering • this-that-1.0 (1408ms) vs Axiom AI Engine (0.07ms)</div>
+    <div class="subtitle">Exact Same Game Speed • this-that-1.0 (1408ms) vs Axiom AI Engine (0.07ms)</div>
   </div>
 
   <div class="controls-bar">
@@ -67,7 +67,7 @@
     <div class="model-card thisthat">
       <div class="model-header">
         <div class="model-name" style="color: #f59e0b;">this-that-1.0 · FLock</div>
-        <div class="model-badge">1.88B Local Model (1,408ms Delay)</div>
+        <div class="model-badge">1.88B Local Model</div>
       </div>
 
       <div class="canvas-container">
@@ -106,7 +106,7 @@
     <div class="model-card axiom">
       <div class="model-header">
         <div class="model-name" style="color: #22c55e;">Axiom AI Engine ⚡</div>
-        <div class="model-badge">0.07ms CPU Engine (Sub-1ms Speed)</div>
+        <div class="model-badge">0.07ms CPU Engine</div>
       </div>
 
       <div class="canvas-container">
@@ -144,7 +144,7 @@
   </div>
 
   <div class="footer-bar">
-    Axiom AI steering pieces in real-time (0.07ms) vs this-that-1.0 1.4s inference delay per move
+    Both boards playing at EXACT same speed • Speed accelerates every 1s • Axiom AI (0.07ms) vs this-that (1408ms)
   </div>
 
   <script>
@@ -161,7 +161,7 @@
       { name: 'Z', shape: [[1,1,0],[0,1,1]], color: '#f00000' }
     ];
 
-    function createRealSteeringTetrisEngine(canvasId, stepDelayMs, scoreId, linesId, piecesId, speedBadgeId, arrLeftId, arrRightId, arrDownId) {
+    function createEqualSpeedTetrisEngine(canvasId, scoreId, linesId, piecesId, speedBadgeId, arrLeftId, arrRightId, arrDownId) {
       const canvas = document.getElementById(canvasId);
       const ctx = canvas.getContext('2d');
       
@@ -173,14 +173,11 @@
       let timer = null, speedTimer = null;
       let playSec = 0;
       let speedMult = 1.0;
+      const baseTickMs = 120; // EXACT SAME BASE SPEED FOR BOTH!
 
       function getNewPiece() {
         const p = PIECES[Math.floor(Math.random() * PIECES.length)];
         return { name: p.name, shape: p.shape, color: p.color };
-      }
-
-      function rotate(matrix) {
-        return matrix[0].map((val, index) => matrix.map(row => row[index]).reverse());
       }
 
       function validMove(board, piece, pos) {
@@ -197,7 +194,6 @@
         return true;
       }
 
-      // Calculate best column placement using AI heuristic
       function calculateBestTarget(piece) {
         let bestScore = -99999;
         let bestX = 3;
@@ -351,7 +347,7 @@
               document.getElementById(scoreId).innerText = String(score).padStart(4, '0');
             }
 
-            // Spawn Next Piece & Recalculate AI Target
+            // Spawn Next Piece
             currentPiece = getNewPiece();
             piecePos = { x: 3, y: 0 };
             targetX = calculateBestTarget(currentPiece);
@@ -363,7 +359,7 @@
 
       function scheduleNext() {
         step();
-        let activeDelay = Math.max(15, Math.floor(stepDelayMs / speedMult));
+        let activeDelay = Math.max(15, Math.floor(baseTickMs / speedMult));
         timer = setTimeout(scheduleNext, activeDelay);
       }
 
@@ -400,11 +396,9 @@
       return { start, stop, reset };
     }
 
-    // Engine Configurations:
-    // this-that: 700ms step delay (simulating 1.4s tournament elimination model thinking)
-    // Axiom AI: 45ms step delay (sub-0.1ms 0.07ms CPU decision loop speed)
-    const engThisThat = createRealSteeringTetrisEngine('c-thisthat', 700, 'score-thisthat', 'lines-thisthat', 'pieces-thisthat', 'speed-thisthat', 'arr-tt-left', 'arr-tt-right', 'arr-tt-down');
-    const engAxiom = createRealSteeringTetrisEngine('c-axiom', 45, 'score-axiom', 'lines-axiom', 'pieces-axiom', 'speed-axiom', 'arr-ax-left', 'arr-ax-right', 'arr-ax-down');
+    // BOTH ENGINES RUN AT EXACT SAME TICK SPEED (120ms Base Tick Rate)!
+    const engThisThat = createEqualSpeedTetrisEngine('c-thisthat', 'score-thisthat', 'lines-thisthat', 'pieces-thisthat', 'speed-thisthat', 'arr-tt-left', 'arr-tt-right', 'arr-tt-down');
+    const engAxiom = createEqualSpeedTetrisEngine('c-axiom', 'score-axiom', 'lines-axiom', 'pieces-axiom', 'speed-axiom', 'arr-ax-left', 'arr-ax-right', 'arr-ax-down');
 
     let isPlaying = false;
 
@@ -415,7 +409,7 @@
         isPlaying = false;
       } else {
         engThisThat.start(); engAxiom.start();
-        document.getElementById('status-txt').innerText = "Status: Live Steering Match • Speed Accelerating!";
+        document.getElementById('status-txt').innerText = "Status: Live Playing • Both Boards Equal Speed Accelerating Every 1s!";
         isPlaying = true;
       }
     }
