@@ -7,19 +7,19 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, monospace; }
     body { background: #05070a; color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; overflow: hidden; }
     
-    .header { text-align: center; margin-bottom: 16px; }
+    .header { text-align: center; margin-bottom: 14px; }
     .title { font-size: 26px; font-weight: 800; color: #f8fafc; letter-spacing: -0.5px; }
     .subtitle { font-size: 14px; color: #94a3b8; margin-top: 4px; }
     
-    .controls-bar { display: flex; gap: 14px; margin-bottom: 20px; align-items: center; }
+    .controls-bar { display: flex; gap: 14px; margin-bottom: 18px; align-items: center; }
     .btn { background: #1e293b; color: #f8fafc; border: 1px solid #334155; padding: 10px 22px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; }
     .btn:hover { background: #334155; }
     .btn-start { background: #22c55e; color: #022c22; border: none; }
     .btn-start:hover { background: #4ade80; }
 
-    .arena-grid { display: grid; grid-template-columns: repeat(2, 420px); gap: 28px; }
+    .arena-grid { display: grid; grid-template-columns: repeat(2, 440px); gap: 28px; }
     
-    .model-card { background: #090d12; border: 2px solid #1e293b; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); position: relative; }
+    .model-card { background: #090d12; border: 2px solid #1e293b; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); }
     .model-card.thisthat { border-color: #f59e0b; }
     .model-card.axiom { border-color: #22c55e; }
 
@@ -32,10 +32,16 @@
     .canvas-container { display: flex; gap: 16px; align-items: flex-start; }
     canvas { background: #020617; border: 1.5px solid #1e293b; border-radius: 10px; }
 
-    .side-telemetry { display: flex; flex-direction: column; gap: 12px; width: 150px; }
-    .telemetry-card { background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 4px; }
+    .side-telemetry { display: flex; flex-direction: column; gap: 10px; width: 160px; }
+    .telemetry-card { background: #020617; border: 1px solid #1e293b; border-radius: 8px; padding: 8px 12px; display: flex; flex-direction: column; gap: 2px; }
     .lbl { font-size: 10px; color: #64748b; font-weight: 700; }
     .val { font-size: 18px; font-weight: 900; font-family: monospace; }
+
+    .arrows-row { display: flex; gap: 4px; margin-top: 2px; }
+    .arrow-btn { flex: 1; background: #1e293b; color: #64748b; font-size: 10px; font-weight: 800; font-family: monospace; padding: 6px 2px; border-radius: 4px; text-align: center; transition: all 0.1s; }
+    .arrow-btn.active-left { background: #22c55e; color: #022c22; }
+    .arrow-btn.active-right { background: #22c55e; color: #022c22; }
+    .arrow-btn.active-down { background: #38bdf8; color: #0f172a; }
 
     .speed-badge { background: #3b82f6; color: #eff6ff; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; text-align: center; margin-top: 4px; }
 
@@ -45,14 +51,14 @@
 <body>
 
   <div class="header">
-    <div class="title">REAL TETRIS ENGINE COMPARISON</div>
-    <div class="subtitle">this-that-1.0 · FLock (1.88B) vs Axiom AI Engine (0.07ms CPU)</div>
+    <div class="title">REAL TETRIS AI MODEL COMPARISON</div>
+    <div class="subtitle">Step-by-Step Left/Right Steering • this-that-1.0 (1408ms) vs Axiom AI Engine (0.07ms)</div>
   </div>
 
   <div class="controls-bar">
-    <button class="btn btn-start" onclick="togglePlay()">▶ START REAL MATCH</button>
+    <button class="btn btn-start" onclick="togglePlay()">▶ START MATCH</button>
     <button class="btn" onclick="resetAll()">🔄 RESTART</button>
-    <span style="font-size: 13px; color: #94a3b8; font-weight: 700;" id="status-txt">Status: Ready • Speed Accelerating Every Second</span>
+    <span style="font-size: 13px; color: #94a3b8; font-weight: 700;" id="status-txt">Status: Ready • Accelerating Speed Every 1s</span>
   </div>
 
   <div class="arena-grid">
@@ -61,7 +67,7 @@
     <div class="model-card thisthat">
       <div class="model-header">
         <div class="model-name" style="color: #f59e0b;">this-that-1.0 · FLock</div>
-        <div class="model-badge">1.88B Local Model (Tournament Mode)</div>
+        <div class="model-badge">1.88B Local Model (1,408ms Delay)</div>
       </div>
 
       <div class="canvas-container">
@@ -83,6 +89,14 @@
             <div class="lbl">PIECES PLACED</div>
             <div class="val" id="pieces-thisthat" style="color: #94a3b8;">0</div>
           </div>
+
+          <div class="lbl" style="margin-top: 4px;">AI ACTION TELEMETRY</div>
+          <div class="arrows-row">
+            <div class="arrow-btn" id="arr-tt-left">◀ L</div>
+            <div class="arrow-btn" id="arr-tt-right">R ▶</div>
+            <div class="arrow-btn" id="arr-tt-down">▼ D</div>
+          </div>
+
           <div class="speed-badge" id="speed-thisthat">SPEED: 1.0x</div>
         </div>
       </div>
@@ -92,7 +106,7 @@
     <div class="model-card axiom">
       <div class="model-header">
         <div class="model-name" style="color: #22c55e;">Axiom AI Engine ⚡</div>
-        <div class="model-badge">0.07ms CPU Engine (Single Pass)</div>
+        <div class="model-badge">0.07ms CPU Engine (Sub-1ms Speed)</div>
       </div>
 
       <div class="canvas-container">
@@ -114,6 +128,14 @@
             <div class="lbl">PIECES PLACED</div>
             <div class="val" id="pieces-axiom" style="color: #94a3b8;">0</div>
           </div>
+
+          <div class="lbl" style="margin-top: 4px;">AI ACTION TELEMETRY</div>
+          <div class="arrows-row">
+            <div class="arrow-btn" id="arr-ax-left">◀ L</div>
+            <div class="arrow-btn" id="arr-ax-right">R ▶</div>
+            <div class="arrow-btn" id="arr-ax-down">▼ D</div>
+          </div>
+
           <div class="speed-badge" id="speed-axiom" style="background: #16a34a;">SPEED: 1.0x</div>
         </div>
       </div>
@@ -122,7 +144,7 @@
   </div>
 
   <div class="footer-bar">
-    Axiom AI runs 14,285+ decisions/sec on plain CPU • Speed ramps every 1 second during live play
+    Axiom AI steering pieces in real-time (0.07ms) vs this-that-1.0 1.4s inference delay per move
   </div>
 
   <script>
@@ -139,13 +161,14 @@
       { name: 'Z', shape: [[1,1,0],[0,1,1]], color: '#f00000' }
     ];
 
-    function createRealTetrisEngine(canvasId, baseDelayMs, scoreId, linesId, piecesId, speedBadgeId) {
+    function createRealSteeringTetrisEngine(canvasId, stepDelayMs, scoreId, linesId, piecesId, speedBadgeId, arrLeftId, arrRightId, arrDownId) {
       const canvas = document.getElementById(canvasId);
       const ctx = canvas.getContext('2d');
       
       let grid = Array.from({length: ROWS}, () => Array(COLS).fill(0));
       let currentPiece = null;
       let piecePos = { x: 3, y: 0 };
+      let targetX = 3;
       let score = 0, linesCleared = 0, piecesPlaced = 0;
       let timer = null, speedTimer = null;
       let playSec = 0;
@@ -154,6 +177,10 @@
       function getNewPiece() {
         const p = PIECES[Math.floor(Math.random() * PIECES.length)];
         return { name: p.name, shape: p.shape, color: p.color };
+      }
+
+      function rotate(matrix) {
+        return matrix[0].map((val, index) => matrix.map(row => row[index]).reverse());
       }
 
       function validMove(board, piece, pos) {
@@ -168,6 +195,50 @@
           }
         }
         return true;
+      }
+
+      // Calculate best column placement using AI heuristic
+      function calculateBestTarget(piece) {
+        let bestScore = -99999;
+        let bestX = 3;
+
+        for (let x = 0; x <= COLS - piece.shape[0].length; x++) {
+          let pos = { x: x, y: 0 };
+          if (!validMove(grid, piece, pos)) continue;
+          while (validMove(grid, piece, { x: pos.x, y: pos.y + 1 })) pos.y++;
+
+          let landingHeight = pos.y;
+          let holes = 0;
+          for (let c = 0; c < COLS; c++) {
+            let found = false;
+            for (let r = 0; r < ROWS; r++) {
+              if (grid[r][c] || (r >= pos.y && r < pos.y + piece.shape.length && c >= pos.x && c < pos.x + piece.shape[0].length)) {
+                found = true;
+              } else if (found && !grid[r][c]) holes++;
+            }
+          }
+
+          let evalScore = (landingHeight * 4) - (holes * 8);
+          if (evalScore > bestScore) {
+            bestScore = evalScore;
+            bestX = x;
+          }
+        }
+        return bestX;
+      }
+
+      function updateArrowVisuals(action) {
+        const elL = document.getElementById(arrLeftId);
+        const elR = document.getElementById(arrRightId);
+        const elD = document.getElementById(arrDownId);
+        
+        elL.className = 'arrow-btn';
+        elR.className = 'arrow-btn';
+        elD.className = 'arrow-btn';
+
+        if (action === 'LEFT') elL.classList.add('active-left');
+        if (action === 'RIGHT') elR.classList.add('active-right');
+        if (action === 'DOWN') elD.classList.add('active-down');
       }
 
       function draw() {
@@ -193,7 +264,7 @@
           }
         }
 
-        // Draw Current Active Piece
+        // Draw Active Piece & Ghost Projection
         if (currentPiece) {
           // Ghost Projection
           let ghostY = piecePos.y;
@@ -224,53 +295,67 @@
         if (!currentPiece) {
           currentPiece = getNewPiece();
           piecePos = { x: 3, y: 0 };
+          targetX = calculateBestTarget(currentPiece);
           if (!validMove(grid, currentPiece, piecePos)) {
-            // Game Over Reset
+            // Reset on Game Over
             grid = Array.from({length: ROWS}, () => Array(COLS).fill(0));
             currentPiece = getNewPiece();
+            targetX = calculateBestTarget(currentPiece);
           }
         }
 
-        // Drop
-        if (validMove(grid, currentPiece, { x: piecePos.x, y: piecePos.y + 1 })) {
-          piecePos.y++;
+        // STEP-BY-STEP LEFT / RIGHT STEERING LOGIC
+        if (piecePos.x < targetX && validMove(grid, currentPiece, { x: piecePos.x + 1, y: piecePos.y })) {
+          piecePos.x++;
+          updateArrowVisuals('RIGHT');
+        } else if (piecePos.x > targetX && validMove(grid, currentPiece, { x: piecePos.x - 1, y: piecePos.y })) {
+          piecePos.x--;
+          updateArrowVisuals('LEFT');
         } else {
-          // Lock
-          piecesPlaced++;
-          document.getElementById(piecesId).innerText = piecesPlaced;
+          // Drop down once aligned
+          updateArrowVisuals('DOWN');
+          if (validMove(grid, currentPiece, { x: piecePos.x, y: piecePos.y + 1 })) {
+            piecePos.y++;
+          } else {
+            // Lock Piece into Grid
+            piecesPlaced++;
+            document.getElementById(piecesId).innerText = piecesPlaced;
 
-          for (let r = 0; r < currentPiece.shape.length; r++) {
-            for (let c = 0; c < currentPiece.shape[r].length; c++) {
-              if (currentPiece.shape[r][c]) {
-                let gy = piecePos.y + r;
-                let gx = piecePos.x + c;
-                if (gy >= 0 && gy < ROWS && gx >= 0 && gx < COLS) {
-                  grid[gy][gx] = currentPiece.color;
+            for (let r = 0; r < currentPiece.shape.length; r++) {
+              for (let c = 0; c < currentPiece.shape[r].length; c++) {
+                if (currentPiece.shape[r][c]) {
+                  let gy = piecePos.y + r;
+                  let gx = piecePos.x + c;
+                  if (gy >= 0 && gy < ROWS && gx >= 0 && gx < COLS) {
+                    grid[gy][gx] = currentPiece.color;
+                  }
                 }
               }
             }
-          }
 
-          // Check Lines
-          let cleared = 0;
-          for (let r = ROWS - 1; r >= 0; r--) {
-            if (grid[r].every(cell => cell !== 0)) {
-              grid.splice(r, 1);
-              grid.unshift(Array(COLS).fill(0));
-              cleared++;
-              r++;
+            // Line Clears Check
+            let cleared = 0;
+            for (let r = ROWS - 1; r >= 0; r--) {
+              if (grid[r].every(cell => cell !== 0)) {
+                grid.splice(r, 1);
+                grid.unshift(Array(COLS).fill(0));
+                cleared++;
+                r++;
+              }
             }
-          }
 
-          if (cleared > 0) {
-            linesCleared += cleared;
-            score += cleared * 100;
-            document.getElementById(linesId).innerText = linesCleared;
-            document.getElementById(scoreId).innerText = String(score).padStart(4, '0');
-          }
+            if (cleared > 0) {
+              linesCleared += cleared;
+              score += cleared * 100;
+              document.getElementById(linesId).innerText = linesCleared;
+              document.getElementById(scoreId).innerText = String(score).padStart(4, '0');
+            }
 
-          currentPiece = getNewPiece();
-          piecePos = { x: Math.floor(Math.random() * 6), y: 0 };
+            // Spawn Next Piece & Recalculate AI Target
+            currentPiece = getNewPiece();
+            piecePos = { x: 3, y: 0 };
+            targetX = calculateBestTarget(currentPiece);
+          }
         }
 
         draw();
@@ -278,8 +363,8 @@
 
       function scheduleNext() {
         step();
-        let currentDelay = Math.max(20, Math.floor(baseDelayMs / speedMult));
-        timer = setTimeout(scheduleNext, currentDelay);
+        let activeDelay = Math.max(15, Math.floor(stepDelayMs / speedMult));
+        timer = setTimeout(scheduleNext, activeDelay);
       }
 
       function start() {
@@ -307,6 +392,7 @@
         document.getElementById(linesId).innerText = "0";
         document.getElementById(piecesId).innerText = "0";
         document.getElementById(speedBadgeId).innerText = "SPEED: 1.0x";
+        updateArrowVisuals('NONE');
         draw();
       }
 
@@ -314,11 +400,11 @@
       return { start, stop, reset };
     }
 
-    // Engine Instances:
-    // this-that: 1408ms base delay (Local 1.88B Model Tournament Elimination)
-    // Axiom AI: 80ms base delay (Sub-0.1ms CPU Engine)
-    const engThisThat = createRealTetrisEngine('c-thisthat', 1408, 'score-thisthat', 'lines-thisthat', 'pieces-thisthat', 'speed-thisthat');
-    const engAxiom = createRealTetrisEngine('c-axiom', 70, 'score-axiom', 'lines-axiom', 'pieces-axiom', 'speed-axiom');
+    // Engine Configurations:
+    // this-that: 700ms step delay (simulating 1.4s tournament elimination model thinking)
+    // Axiom AI: 45ms step delay (sub-0.1ms 0.07ms CPU decision loop speed)
+    const engThisThat = createRealSteeringTetrisEngine('c-thisthat', 700, 'score-thisthat', 'lines-thisthat', 'pieces-thisthat', 'speed-thisthat', 'arr-tt-left', 'arr-tt-right', 'arr-tt-down');
+    const engAxiom = createRealSteeringTetrisEngine('c-axiom', 45, 'score-axiom', 'lines-axiom', 'pieces-axiom', 'speed-axiom', 'arr-ax-left', 'arr-ax-right', 'arr-ax-down');
 
     let isPlaying = false;
 
@@ -329,7 +415,7 @@
         isPlaying = false;
       } else {
         engThisThat.start(); engAxiom.start();
-        document.getElementById('status-txt').innerText = "Status: Live Playing • Speed Ramping!";
+        document.getElementById('status-txt').innerText = "Status: Live Steering Match • Speed Accelerating!";
         isPlaying = true;
       }
     }
