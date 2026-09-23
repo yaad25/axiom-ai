@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "axiom-decision-ai"
-version = "1.0.0"
+version = "1.1.0"
 description = "Universal Cross-Platform Sub-1ms Typed-Decision Engine"
 readme = "README.md"
-authors = [{ name = "Axiom AI Developers" }]
+authors = [{ name = "yaad25" }]
 license = { text = "Apache-2.0" }
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -32,9 +32,9 @@ transformers = ["torch>=2.0.0", "transformers>=4.30.0"]
 all = ["onnxruntime>=1.15.0", "torch>=2.0.0", "transformers>=4.30.0"]
 
 [project.urls]
-Homepage = "https://github.com/axiom-ai/axiom-ai"
-Documentation = "https://github.com/axiom-ai/axiom-ai#readme"
-Repository = "https://github.com/axiom-ai/axiom-ai"
+Homepage = "https://github.com/yaad25/axiom-ai"
+Documentation = "https://github.com/yaad25/axiom-ai#readme"
+Repository = "https://github.com/yaad25/axiom-ai"
 
 [project.scripts]
 axiom-server = "server.app:app"

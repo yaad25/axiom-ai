@@ -66,6 +66,18 @@ def _tokenize(text: str) -> list[str]:
     return [_stem(w) for w in raw if w not in _STOPWORDS]
 
 
+def _char_ngram_similarity(s1: str, s2: str, n: int = 3) -> float:
+    if not s1 or not s2:
+        return 0.0
+    s1_clean = s1.lower().strip()
+    s2_clean = s2.lower().strip()
+    ngrams1 = set(s1_clean[i : i + n] for i in range(len(s1_clean) - n + 1)) if len(s1_clean) >= n else {s1_clean}
+    ngrams2 = set(s2_clean[i : i + n] for i in range(len(s2_clean) - n + 1)) if len(s2_clean) >= n else {s2_clean}
+    intersection = len(ngrams1 & ngrams2)
+    union = len(ngrams1 | ngrams2)
+    return intersection / union if union > 0 else 0.0
+
+
 def _bm25_score(query_tokens: list[str], doc_tokens: list[str], k1: float = 1.2, b: float = 0.75) -> float:
     if not query_tokens or not doc_tokens:
         return 0.0
@@ -83,6 +95,13 @@ def _bm25_score(query_tokens: list[str], doc_tokens: list[str], k1: float = 1.2,
             num = tf * (k1 + 1.0)
             den = tf + k1 * (1.0 - b + b * (doc_len / avg_len))
             score += idf * (num / den)
+        else:
+            # Hybrid Fuzzy Character N-Gram Fallback for ambiguous / synonym matches
+            for dt in doc_counts:
+                sim = _char_ngram_similarity(qt, dt)
+                if sim >= 0.5:
+                    score += sim * 0.35
+
     return score
 
 

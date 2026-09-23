@@ -133,6 +133,22 @@ Response:
 
 ---
 
+## 🔌 1-Line Framework Middlewares (FastAPI & Flask)
+
+Integrate Axiom AI directly into your Python backend web servers:
+
+```python
+from fastapi import FastAPI
+from server.middleware import AxiomFastAPIMiddleware
+
+app = FastAPI()
+# Add sub-1ms decision engine in 1 line
+app.add_middleware(AxiomFastAPIMiddleware, backend_name="axiom-fast")
+```
+*(Full recipe: [`examples/fastapi_middleware_demo.py`](examples/fastapi_middleware_demo.py))*
+
+---
+
 ## 🌐 TypeScript / JavaScript SDK (`sdk-js`)
 
 ```typescript
@@ -166,19 +182,6 @@ python examples/bench.py sample.jsonl --targets axiom
 ```
 
 ---
-
-## 💰 Commercial API Monetization
-
-Host your own paid decision API with Axiom AI:
-
-- **Free Tier**: `1,000 req/day` ($0/mo)
-- **Pro Tier**: `1,000,000 req/mo` ($29/mo)
-- **Enterprise Tier**: `Dedicated Instance` ($299/mo)
-
-Check API pricing & create paid client keys:
-```bash
-curl http://localhost:8000/v1/billing/plans
-```
 
 ## 💖 Support Development
 
