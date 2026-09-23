@@ -17,17 +17,37 @@
     const OFFSET_X = 36, OFFSET_Y = 145;
     const GAME_W = 330, GAME_H = 270;
     
+    // Grid 10x8
+    const GW = 10, GH = 8;
+    const CELL = 30;
+    
     let path = [
-      {x: 20, y: 30}, {x: 20, y: 80}, {x: 80, y: 80}, {x: 80, y: 150},
-      {x: 140, y: 150}, {x: 140, y: 220}, {x: 200, y: 220}, {x: 200, y: 100},
-      {x: 260, y: 100}, {x: 260, y: 240}, {x: 310, y: 240}
+      {x: 1, y: 1}, {x: 2, y: 1}, {x: 3, y: 1}, {x: 3, y: 2}, {x: 3, y: 3},
+      {x: 4, y: 3}, {x: 5, y: 3}, {x: 5, y: 4}, {x: 5, y: 5}, {x: 6, y: 5},
+      {x: 7, y: 5}, {x: 7, y: 6}, {x: 8, y: 6}, {x: 8, y: 7}
     ];
+    
     let pathIdx = 0;
-    let steps = 42;
+    let visited = [];
+    let steps = 0;
+    let dotsCollected = 0;
 
     function gameStep() {
       pathIdx = (pathIdx + 1) % path.length;
-      if (pathIdx === 0) steps = 0; else steps++;
+      let curr = path[pathIdx];
+      
+      visited.push(curr);
+      if (visited.length > 12) visited.shift();
+      
+      steps++;
+      if (pathIdx === 0) {
+        steps = 0;
+        dotsCollected = 0;
+        visited = [];
+      } else {
+        dotsCollected++;
+      }
+
       render();
     }
 
@@ -59,37 +79,56 @@
       ctx.textAlign = 'right'; ctx.font = '14px monospace'; ctx.fillStyle = '#64748b';
       ctx.fillText('LEVEL 09', 366, 125);
 
-      // Game Canvas Box (Maze Space)
+      // Game Canvas Box
       ctx.fillStyle = '#020617'; ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2;
       ctx.fillRect(OFFSET_X, OFFSET_Y, GAME_W, GAME_H);
       ctx.strokeRect(OFFSET_X, OFFSET_Y, GAME_W, GAME_H);
 
-      // Draw Maze Walls
-      ctx.strokeStyle = '#4338ca'; ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(OFFSET_X + 60, OFFSET_Y + 20); ctx.lineTo(OFFSET_X + 60, OFFSET_Y + 180);
-      ctx.moveTo(OFFSET_X + 120, OFFSET_Y + 80); ctx.lineTo(OFFSET_X + 120, OFFSET_Y + 250);
-      ctx.moveTo(OFFSET_X + 180, OFFSET_Y + 20); ctx.lineTo(OFFSET_X + 180, OFFSET_Y + 180);
-      ctx.moveTo(OFFSET_X + 240, OFFSET_Y + 80); ctx.lineTo(OFFSET_X + 240, OFFSET_Y + 250);
-      ctx.stroke();
+      // Draw Grid Lines
+      ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 1;
+      for (let x = OFFSET_X; x <= OFFSET_X + GAME_W; x += CELL) {
+        ctx.beginPath(); ctx.moveTo(x, OFFSET_Y); ctx.lineTo(x, OFFSET_Y + GAME_H); ctx.stroke();
+      }
+      for (let y = OFFSET_Y; y <= OFFSET_Y + GAME_H; y += CELL) {
+        ctx.beginPath(); ctx.moveTo(OFFSET_X, y); ctx.lineTo(OFFSET_X + GAME_W, y); ctx.stroke();
+      }
 
-      // Draw Path Line
-      ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 4;
-      ctx.beginPath(); ctx.setLineDash([8, 8]);
-      path.forEach((pt, idx) => {
-        if (idx === 0) ctx.moveTo(OFFSET_X + pt.x, OFFSET_Y + pt.y);
-        else ctx.lineTo(OFFSET_X + pt.x, OFFSET_Y + pt.y);
+      // Draw Maze Walls
+      ctx.fillStyle = '#1e1b4b'; ctx.strokeStyle = '#4338ca'; ctx.lineWidth = 2;
+      const walls = [
+        {x: 0, y: 0}, {x: 1, y: 0}, {x: 2, y: 0}, {x: 3, y: 0}, {x: 4, y: 0}, {x: 5, y: 0}, {x: 6, y: 0}, {x: 7, y: 0}, {x: 8, y: 0}, {x: 9, y: 0},
+        {x: 0, y: 2}, {x: 1, y: 2}, {x: 5, y: 1}, {x: 5, y: 2}, {x: 7, y: 1}, {x: 7, y: 2}, {x: 7, y: 3}, {x: 2, y: 4}, {x: 3, y: 4},
+        {x: 1, y: 6}, {x: 2, y: 6}, {x: 3, y: 6}, {x: 4, y: 6}, {x: 6, y: 7}
+      ];
+      walls.forEach(w => {
+        ctx.fillRect(OFFSET_X + w.x * CELL, OFFSET_Y + w.y * CELL, CELL, CELL);
+        ctx.strokeRect(OFFSET_X + w.x * CELL, OFFSET_Y + w.y * CELL, CELL, CELL);
       });
-      ctx.stroke(); ctx.setLineDash([]);
+
+      // Draw Visited Path Trail
+      visited.forEach((v, idx) => {
+        ctx.fillStyle = `rgba(168, 85, 247, ${(idx + 1) / visited.length * 0.4})`;
+        ctx.fillRect(OFFSET_X + v.x * CELL + 4, OFFSET_Y + v.y * CELL + 4, CELL - 8, CELL - 8);
+      });
 
       // Draw Agent Position
       let curr = path[pathIdx];
       ctx.fillStyle = '#ec4899'; ctx.strokeStyle = '#fbcfe8'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(OFFSET_X + curr.x, OFFSET_Y + curr.y, 9, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(OFFSET_X + curr.x * CELL + CELL/2, OFFSET_Y + curr.y * CELL + CELL/2, 10, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
 
-      // Goal
+      // Goal Flag
       ctx.fillStyle = '#22c55e'; ctx.beginPath();
-      ctx.arc(OFFSET_X + 310, OFFSET_Y + 240, 10, 0, Math.PI * 2); ctx.fill();
+      ctx.arc(OFFSET_X + 8 * CELL + CELL/2, OFFSET_Y + 7 * CELL + CELL/2, 11, 0, Math.PI * 2); ctx.fill();
+
+      // Determine current direction for telemetry
+      let nextPos = path[(pathIdx + 1) % path.length];
+      let moveDir = 'MOVE_RIGHT';
+      if (nextPos.y > curr.y) moveDir = 'MOVE_DOWN';
+      else if (nextPos.x > curr.x) moveDir = 'MOVE_RIGHT';
+      else if (nextPos.y < curr.y) moveDir = 'MOVE_UP';
+      else if (nextPos.x < curr.x) moveDir = 'MOVE_LEFT';
 
       // Score Board
       ctx.textAlign = 'left';
@@ -112,30 +151,25 @@
       ctx.font = 'bold 13px monospace'; ctx.fillStyle = '#f8fafc'; ctx.fillText('NEXT MOVE', 420, 190);
       ctx.fillStyle = '#64748b'; ctx.fillText('PATH PROBABILITIES', 570, 190);
 
-      let probs = [
-        { name: 'MOVE_DOWN', prob: 0.98 },
-        { name: 'MOVE_RIGHT', prob: 0.02 },
-        { name: 'MOVE_LEFT', prob: 0.00 },
-        { name: 'MOVE_UP', prob: 0.00 }
-      ];
-
+      let dirs = ['MOVE_RIGHT', 'MOVE_DOWN', 'MOVE_LEFT', 'MOVE_UP'];
       let yOff = 215;
-      probs.forEach((item, idx) => {
-        let isActive = idx === 0;
+      dirs.forEach(dName => {
+        let isActive = (dName === moveDir);
+        let prob = isActive ? 0.94 : 0.02;
         ctx.fillStyle = isActive ? '#a855f7' : '#64748b';
         ctx.font = isActive ? 'bold 14px monospace' : '13px monospace';
-        ctx.fillText((isActive ? '> ' : '  ') + item.name, 420, yOff);
+        ctx.fillText((isActive ? '> ' : '  ') + dName, 420, yOff);
 
         ctx.fillStyle = isActive ? '#a855f7' : '#334155';
-        ctx.fillRect(540, yOff - 11, item.prob * 180, 14);
+        ctx.fillRect(540, yOff - 11, prob * 180, 14);
 
         ctx.fillStyle = isActive ? '#a855f7' : '#64748b';
-        ctx.fillText(item.prob.toFixed(2), 740, yOff);
+        ctx.fillText(prob.toFixed(2), 740, yOff);
         yOff += 25;
       });
 
       ctx.font = '13px monospace'; ctx.fillStyle = '#64748b'; ctx.fillText('EXECUTING', 420, yOff + 15);
-      ctx.font = 'bold 15px monospace'; ctx.fillStyle = '#a855f7'; ctx.fillText('MOVE_DOWN', 540, yOff + 15);
+      ctx.font = 'bold 15px monospace'; ctx.fillStyle = '#a855f7'; ctx.fillText(moveDir, 540, yOff + 15);
 
       ctx.font = '12px monospace'; ctx.fillStyle = '#64748b'; ctx.fillText('PATH OPTIMALITY', 420, yOff + 50);
       ctx.fillStyle = '#1e293b'; ctx.fillRect(420, yOff + 60, 220, 2);

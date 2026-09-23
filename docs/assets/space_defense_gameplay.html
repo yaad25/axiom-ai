@@ -17,50 +17,85 @@
     const OFFSET_X = 36, OFFSET_Y = 145;
     const GAME_W = 330, GAME_H = 270;
     
-    let player = { x: 165, y: 230 };
+    let player = { x: 150, y: 230 };
     let lasers = [];
-    let enemies = [
-      { x: 40, y: 50, vx: 2 },
-      { x: 100, y: 80, vx: -2 },
-      { x: 180, y: 40, vx: 2.5 },
-      { x: 260, y: 70, vx: -1.5 }
-    ];
+    let enemies = [];
+    let particles = [];
+    let stars = [];
     let kills = 142, shield = 100;
 
+    // Init Starfield
+    for (let i = 0; i < 30; i++) {
+      stars.push({ x: Math.random() * GAME_W, y: Math.random() * GAME_H, speed: 1 + Math.random() * 2 });
+    }
+
+    function spawnEnemies() {
+      for (let i = 0; i < 4; i++) {
+        enemies.push({ x: 30 + i * 75, y: -20 - (i * 30), vx: (i % 2 === 0 ? 1.5 : -1.5) });
+      }
+    }
+    spawnEnemies();
+
     function gameStep() {
-      // Auto-pilot track nearest enemy
+      // Starfield animation
+      stars.forEach(s => {
+        s.y += s.speed;
+        if (s.y > GAME_H) { s.y = 0; s.x = Math.random() * GAME_W; }
+      });
+
+      // Target nearest enemy
       let nearest = enemies[0];
+      enemies.forEach(e => {
+        if (e.y > nearest.y && e.y < GAME_H - 40) nearest = e;
+      });
+
       if (nearest) {
-        if (player.x < nearest.x) player.x += 4;
-        if (player.x > nearest.x) player.x -= 4;
+        let targetX = nearest.x - 3;
+        player.x += (targetX - player.x) * 0.25;
+        player.x = Math.max(10, Math.min(GAME_W - 40, player.x));
       }
 
-      // Fire laser
-      if (Math.random() > 0.25) {
+      // Fire Lasers
+      if (Math.random() > 0.2) {
         lasers.push({ x: player.x + 13, y: player.y });
       }
 
-      // Update Lasers
-      lasers.forEach(l => l.y -= 8);
-      lasers = lasers.filter(l => l.y > 0);
+      // Lasers Movement
+      lasers.forEach(l => l.y -= 9);
+      lasers = lasers.filter(l => l.y > -10);
 
-      // Update Enemies
+      // Enemies Movement
       enemies.forEach(e => {
+        e.y += 0.8;
         e.x += e.vx;
         if (e.x < 15 || e.x > GAME_W - 35) e.vx *= -1;
+        if (e.y > GAME_H) {
+          e.y = -20; e.x = Math.random() * (GAME_W - 40) + 20;
+        }
       });
 
-      // Collision Check
+      // Explosions & Collisions
       lasers.forEach((l, li) => {
         enemies.forEach((e, ei) => {
-          if (Math.abs(l.x - (e.x + 10)) < 15 && Math.abs(l.y - (e.y + 10)) < 15) {
+          if (Math.abs(l.x - (e.x + 12)) < 16 && Math.abs(l.y - (e.y + 10)) < 16) {
             kills++;
-            e.x = Math.random() * (GAME_W - 40) + 20;
-            e.y = 40 + Math.random() * 50;
+            // Create particle explosion
+            for (let p = 0; p < 8; p++) {
+              particles.push({
+                x: e.x + 12, y: e.y + 10,
+                vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4,
+                life: 1.0, color: Math.random() > 0.5 ? '#f59e0b' : '#ef4444'
+              });
+            }
+            e.y = -30; e.x = Math.random() * (GAME_W - 40) + 20;
             lasers.splice(li, 1);
           }
         });
       });
+
+      // Update Particles
+      particles.forEach(p => { p.x += p.vx; p.y += p.vy; p.life -= 0.08; });
+      particles = particles.filter(p => p.life > 0);
 
       render();
     }
@@ -93,18 +128,23 @@
       ctx.textAlign = 'right'; ctx.font = '14px monospace'; ctx.fillStyle = '#64748b';
       ctx.fillText('WAVE 07', 366, 125);
 
-      // Game Canvas Box (Radar Dark Space)
+      // Game Canvas Box (Space Radar)
       ctx.fillStyle = '#020617'; ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2;
       ctx.fillRect(OFFSET_X, OFFSET_Y, GAME_W, GAME_H);
       ctx.strokeRect(OFFSET_X, OFFSET_Y, GAME_W, GAME_H);
 
+      // Draw Starfield
+      ctx.fillStyle = '#475569';
+      stars.forEach(s => {
+        ctx.fillRect(OFFSET_X + s.x, OFFSET_Y + s.y, 2, 2);
+      });
+
       // Draw Radar Circles
       ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.arc(OFFSET_X + GAME_W/2, OFFSET_Y + GAME_H/2, 80, 0, Math.PI*2); ctx.stroke();
-      ctx.beginPath(); ctx.arc(OFFSET_X + GAME_W/2, OFFSET_Y + GAME_H/2, 40, 0, Math.PI*2); ctx.stroke();
 
       // Draw Lasers
-      ctx.fillStyle = '#ef4444';
+      ctx.fillStyle = '#38bdf8';
       lasers.forEach(l => {
         ctx.fillRect(OFFSET_X + l.x, OFFSET_Y + l.y, 4, 12);
       });
@@ -121,6 +161,12 @@
       ctx.fillStyle = '#f43f5e'; ctx.strokeStyle = '#fca5a5';
       enemies.forEach(e => {
         ctx.fillRect(OFFSET_X + e.x, OFFSET_Y + e.y, 24, 16);
+      });
+
+      // Draw Explosions
+      particles.forEach(p => {
+        ctx.fillStyle = p.color; ctx.beginPath();
+        ctx.arc(OFFSET_X + p.x, OFFSET_Y + p.y, p.life * 4, 0, Math.PI*2); ctx.fill();
       });
 
       // Score Board
@@ -146,9 +192,9 @@
 
       let probs = [
         { name: 'FIRE_LASER', prob: 0.98 },
-        { name: 'EVADE_LEFT', prob: 0.01 },
-        { name: 'SHIELD', prob: 0.01 },
-        { name: 'BOOST', prob: 0.00 }
+        { name: 'STRAFE_LEFT', prob: 0.01 },
+        { name: 'STRAFE_RIGHT', prob: 0.01 },
+        { name: 'SHIELD_BOOST', prob: 0.00 }
       ];
 
       let yOff = 215;
@@ -196,7 +242,7 @@
       ctx.textAlign = 'right'; ctx.fillStyle = '#475569'; ctx.fillText('ESTIMATES BY AXIOM AI ENGINE', 924, 524);
     }
 
-    setInterval(gameStep, 35);
+    setInterval(gameStep, 30);
   </script>
 </body>
 </html>
