@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320" width="100%" height="100%">
+  <rect width="600" height="320" fill="#1e1b4b" rx="10"/>
+  
+  <!-- Maze Walls -->
+  <g stroke="#4338ca" stroke-width="4">
+    <line x1="100" y1="50" x2="100" y2="200"/>
+    <line x1="180" y1="100" x2="180" y2="270"/>
+    <line x1="260" y1="50" x2="260" y2="180"/>
+    <line x1="340" y1="120" x2="340" y2="270"/>
+    <line x1="420" y1="50" x2="420" y2="200"/>
+    <line x1="500" y1="100" x2="500" y2="270"/>
+  </g>
+
+  <!-- Header Overlay -->
+  <rect x="15" y="10" width="570" height="32" fill="#0f172a" rx="6" stroke="#312e81" stroke-width="1"/>
+  <text x="25" y="31" fill="#818cf8" font-family="monospace" font-size="13" font-weight="bold">GAMEPLAY: MAZE RUNNER BFS PATHFINDER</text>
+  <text x="360" y="31" fill="#c7d2fe" font-family="monospace" font-size="12">PATH: OPTIMAL_STEP (0.05ms)</text>
+
+  <!-- Optimal Path Line -->
+  <polyline points="60,80 60,240 140,240 140,70 220,70 220,240 300,240 300,70 380,70 380,240 460,240 460,70 540,70" fill="none" stroke="#a855f7" stroke-width="5" stroke-dasharray="10,10">
+    <animate attributeName="stroke-dashoffset" values="0;-40" dur="1s" repeatCount="indefinite"/>
+  </polyline>
+
+  <!-- Player Agent Node -->
+  <circle cx="60" cy="80" r="12" fill="#ec4899" stroke="#fbcfe8" stroke-width="2">
+    <animate attributeName="r" values="10;14;10" dur="0.8s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Target Goal Node -->
+  <circle cx="540" cy="70" r="14" fill="#22c55e" stroke="#bbf7d0" stroke-width="2"/>
+
+  <!-- Bottom AI Stats Overlay -->
+  <rect x="15" y="280" width="570" height="30" fill="#0f172a" rx="4" stroke="#312e81" stroke-width="1"/>
+  <text x="25" y="300" fill="#c7d2fe" font-family="monospace" font-size="11">BFS DECISION PROBABILITIES: [SOLVE_STEP_DOWN: 97.9% | ALTERNATIVE: 2.1%]</text>
+</svg>

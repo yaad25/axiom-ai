@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320" width="100%" height="100%">
+  <rect width="600" height="320" fill="#0b0f19" rx="10"/>
+  <!-- Grid -->
+  <path d="M 0 40 L 600 40 M 0 80 L 600 80 M 0 120 L 600 120 M 0 160 L 600 160 M 0 200 L 600 200 M 0 240 L 600 240 M 0 280 L 600 280" stroke="#1f293d" stroke-width="1"/>
+  <path d="M 60 0 L 60 320 M 120 0 L 120 320 M 180 0 L 180 320 M 240 0 L 240 320 M 300 0 L 300 320 M 360 0 L 360 320 M 420 0 L 420 320 M 480 0 L 480 320 M 540 0 L 540 320" stroke="#1f293d" stroke-width="1"/>
+  
+  <!-- Header Overlay -->
+  <rect x="15" y="15" width="570" height="35" fill="#161e2e" rx="6" stroke="#374151" stroke-width="1"/>
+  <text x="30" y="38" fill="#60a5fa" font-family="monospace" font-size="14" font-weight="bold">GAMEPLAY: SPACE DEFENSE</text>
+  <text x="360" y="38" fill="#4ade80" font-family="monospace" font-size="13">DECISION: FIRE_LASER (0.07ms)</text>
+
+  <!-- Player Ship -->
+  <polygon points="300,240 280,270 320,270" fill="#3b82f6" stroke="#60a5fa" stroke-width="2"/>
+  
+  <!-- Laser Animation -->
+  <line x1="300" y1="240" x2="300" y2="100" stroke="#ef4444" stroke-width="4">
+    <animate attributeName="y2" values="240;80;240" dur="0.8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;0.2;1" dur="0.8s" repeatCount="indefinite"/>
+  </line>
+  
+  <!-- Enemy Ship 1 -->
+  <g transform="translate(300, 80)">
+    <polygon points="0,0 -15,-20 15,-20" fill="#f43f5e" stroke="#fda4af" stroke-width="2">
+      <animateTransform attributeName="transform" type="translate" values="260,70; 340,90; 260,70" dur="3s" repeatCount="indefinite"/>
+    </polygon>
+  </g>
+
+  <!-- Enemy Ship 2 -->
+  <g transform="translate(180, 110)">
+    <polygon points="0,0 -12,-15 12,-15" fill="#a855f7" stroke="#c084fc" stroke-width="2">
+      <animateTransform attributeName="transform" type="translate" values="140,110; 200,120; 140,110" dur="2.5s" repeatCount="indefinite"/>
+    </polygon>
+  </g>
+
+  <!-- Explosions / Particles -->
+  <circle cx="300" cy="80" r="12" fill="#eab308" opacity="0.6">
+    <animate attributeName="r" values="4;20;4" dur="0.8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.9;0;0.9" dur="0.8s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Bottom AI Stats Overlay -->
+  <rect x="15" y="275" width="570" height="30" fill="#111827" rx="4" stroke="#1f2937" stroke-width="1"/>
+  <text x="25" y="295" fill="#9ca3af" font-family="monospace" font-size="11">AI ACTION PROBABILITIES: [FIRE_LASER: 98.4% | EVADE_LEFT: 1.2% | SHIELD: 0.4%]</text>
+</svg>

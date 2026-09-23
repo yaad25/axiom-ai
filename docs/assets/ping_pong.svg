@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320" width="100%" height="100%">
+  <rect width="600" height="320" fill="#064e3b" rx="10"/>
+  <!-- Table lines -->
+  <rect x="30" y="50" width="540" height="220" fill="#047857" stroke="#ecfdf5" stroke-width="4"/>
+  <line x1="300" y1="50" x2="300" y2="270" stroke="#ecfdf5" stroke-width="4" stroke-dasharray="8,8"/>
+
+  <!-- Header Overlay -->
+  <rect x="15" y="10" width="570" height="32" fill="#022c22" rx="6" stroke="#065f46" stroke-width="1"/>
+  <text x="25" y="31" fill="#34d399" font-family="monospace" font-size="13" font-weight="bold">GAMEPLAY: PING PONG AI RALLY</text>
+  <text x="350" y="31" fill="#a7f3d0" font-family="monospace" font-size="12">PREDICT: TOP_SPIN_SMASH (0.05ms)</text>
+
+  <!-- Left Paddle (Opponent) -->
+  <rect x="50" y="130" width="12" height="60" fill="#f43f5e" rx="4">
+    <animate attributeName="y" values="130;80;170;130" dur="2s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Right Paddle (Axiom AI Pilot) -->
+  <rect x="530" y="130" width="12" height="60" fill="#3b82f6" rx="4" stroke="#93c5fd" stroke-width="2">
+    <animate attributeName="y" values="130;160;70;130" dur="2s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- Ball trajectory path -->
+  <polyline points="60,160 300,100 530,150" fill="none" stroke="#fef08a" stroke-width="2" stroke-dasharray="4,4" opacity="0.7"/>
+
+  <!-- Ball -->
+  <circle cx="60" cy="160" r="8" fill="#facc15" stroke="#ffffff" stroke-width="1.5">
+    <animate attributeName="cx" values="60;300;530;300;60" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="cy" values="160;100;150;210;160" dur="2s" repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Bottom AI Stats Overlay -->
+  <rect x="15" y="280" width="570" height="30" fill="#022c22" rx="4" stroke="#065f46" stroke-width="1"/>
+  <text x="25" y="300" fill="#6ee7b7" font-family="monospace" font-size="11">TRAJECTORY MATCH: [TOP_SPIN_SMASH: 96.8% | SLICE_DEFENSE: 2.8% | LOB: 0.4%]</text>
+</svg>

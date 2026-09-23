@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320" width="100%" height="100%">
+  <rect width="600" height="320" fill="#0f172a" rx="10"/>
+  
+  <!-- Highway Road -->
+  <rect x="150" y="0" width="300" height="320" fill="#1e293b"/>
+  <!-- Lane Dividers -->
+  <line x1="250" y1="0" x2="250" y2="320" stroke="#f8fafc" stroke-width="4" stroke-dasharray="20,20">
+    <animate attributeName="stroke-dashoffset" values="0;40" dur="0.5s" repeatCount="indefinite"/>
+  </line>
+  <line x1="350" y1="0" x2="350" y2="320" stroke="#f8fafc" stroke-width="4" stroke-dasharray="20,20">
+    <animate attributeName="stroke-dashoffset" values="0;40" dur="0.5s" repeatCount="indefinite"/>
+  </line>
+
+  <!-- Header Overlay -->
+  <rect x="15" y="15" width="570" height="35" fill="#0f172a" rx="6" stroke="#334155" stroke-width="1"/>
+  <text x="30" y="38" fill="#38bdf8" font-family="monospace" font-size="14" font-weight="bold">GAMEPLAY: TURBO RACER AI</text>
+  <text x="350" y="38" fill="#4ade80" font-family="monospace" font-size="13">STEER: LANE_LEFT (0.06ms)</text>
+
+  <!-- Player Car (Yellow) -->
+  <g transform="translate(200, 220)">
+    <rect x="-15" y="-25" width="30" height="50" fill="#eab308" rx="6" stroke="#fef08a" stroke-width="2"/>
+    <rect x="-10" y="-15" width="20" height="12" fill="#0284c7" rx="2"/>
+    <animateTransform attributeName="transform" type="translate" values="200,220; 300,220; 200,220" dur="2.4s" repeatCount="indefinite"/>
+  </g>
+
+  <!-- Traffic Car 1 (Red) -->
+  <g transform="translate(300, 80)">
+    <rect x="-15" y="-25" width="30" height="50" fill="#ef4444" rx="6" stroke="#fca5a5" stroke-width="2"/>
+    <animateTransform attributeName="transform" type="translate" values="300,-50; 300,370" dur="1.8s" repeatCount="indefinite"/>
+  </g>
+
+  <!-- Traffic Car 2 (Purple) -->
+  <g transform="translate(400, 150)">
+    <rect x="-15" y="-25" width="30" height="50" fill="#a855f7" rx="6" stroke="#e9d5ff" stroke-width="2"/>
+    <animateTransform attributeName="transform" type="translate" values="400,-100; 400,370" dur="2.2s" repeatCount="indefinite"/>
+  </g>
+
+  <!-- Bottom AI Stats Overlay -->
+  <rect x="15" y="275" width="570" height="30" fill="#090d16" rx="4" stroke="#1e293b" stroke-width="1"/>
+  <text x="25" y="295" fill="#94a3b8" font-family="monospace" font-size="11">AI ACTION PROBABILITIES: [STEER_LEFT: 92.1% | MAINTAIN_SPEED: 7.3% | BRAKE: 0.6%]</text>
+</svg>

@@ -50,17 +50,37 @@ Response:
 
 ---
 
-## 🎮 Real-Time Neural Arcade Demos
+## 🎮 Real-Time Neural Arcade Gameplay Previews
 
 Experience Axiom AI evaluating sub-millisecond decision probabilities in real-time across interactive arcade games:
 
-| Game Showcase | Description | Demo Asset |
-|---|---|---|
-| 👾 **Space Defense** *(Flagship)* | Laser combat AI evaluating tactical maneuvers in sub-1ms | [`docs/assets/space_defense_gameplay.html`](docs/assets/space_defense_gameplay.html) |
-| 🏎️ **Turbo Racer** | 240 KM/H highway steering & crash avoidance pilot | [`docs/assets/turbo_racer_gameplay.html`](docs/assets/turbo_racer_gameplay.html) |
-| 🏓 **Ping Pong** | Hyper-speed table tennis rally trajectory predictor | [`docs/assets/ping_pong_gameplay.html`](docs/assets/ping_pong_gameplay.html) |
-| 🐍 **Snake Engine** | Auto-pilot pathfinding with zero wall traps | [`docs/assets/snake_gameplay.html`](docs/assets/snake_gameplay.html) |
-| 🌀 **Maze Runner** | 100% optimal BFS grid pathfinding engine | [`docs/assets/maze_runner_gameplay.html`](docs/assets/maze_runner_gameplay.html) |
+### 👾 1. Space Defense (Flagship Sub-1ms Combat AI)
+![Space Defense Gameplay Preview](docs/assets/space_defense.svg)
+*Interactive HTML Demo*: [`docs/assets/space_defense_gameplay.html`](docs/assets/space_defense_gameplay.html)
+
+---
+
+### 🏎️ 2. Turbo Racer (240 KM/H Highway Steering Pilot)
+![Turbo Racer Gameplay Preview](docs/assets/turbo_racer.svg)
+*Interactive HTML Demo*: [`docs/assets/turbo_racer_gameplay.html`](docs/assets/turbo_racer_gameplay.html)
+
+---
+
+### 🏓 3. Ping Pong (Hyper-Speed Rally Trajectory Predictor)
+![Ping Pong Gameplay Preview](docs/assets/ping_pong.svg)
+*Interactive HTML Demo*: [`docs/assets/ping_pong_gameplay.html`](docs/assets/ping_pong_gameplay.html)
+
+---
+
+### 🐍 4. Snake Engine (Auto-Pilot Pathfinding)
+![Snake Engine Gameplay Preview](docs/assets/snake_gameplay.svg)
+*Interactive HTML Demo*: [`docs/assets/snake_gameplay.html`](docs/assets/snake_gameplay.html)
+
+---
+
+### 🌀 5. Maze Runner (Optimal BFS Grid Solver)
+![Maze Runner Gameplay Preview](docs/assets/maze_runner.svg)
+*Interactive HTML Demo*: [`docs/assets/maze_runner_gameplay.html`](docs/assets/maze_runner_gameplay.html)
 
 ---
 
