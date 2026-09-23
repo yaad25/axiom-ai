@@ -1,15 +1,3 @@
----
-title: Axiom AI - Universal Typed Decision Engine
-emoji: ⚡
-colorFrom: blue
-colorTo: indigo
-sdk: docker
-app_port: 7860
-pinned: false
-license: apache-2.0
-short_description: Universal Sub-1ms CPU Typed-Decision Engine
----
-
 # Axiom AI ⚡
 
 **The Ultimate Cross-Platform Typed-Decision Engine.**  

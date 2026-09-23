@@ -380,14 +380,12 @@ class LayaBackend(Backend):
 
 def get_backend(name: str) -> Backend:
     name_clean = name.lower().strip()
-    if name_clean in ("axiom-fast", "axiom-fast-v1", "noor-fast", "heuristic"):
+    if name_clean in ("axiom-fast", "axiom-fast-v1", "fast", "heuristic"):
         return AxiomFastBackend()
-    if name_clean in ("axiom-multilingual", "axiom-multi", "noor-multilingual", "multilingual"):
+    if name_clean in ("axiom-multilingual", "axiom-multi", "multilingual"):
         return AxiomMultilingualFastBackend()
-    if name_clean in ("axiom-onnx", "axiom-onnx-v1", "noor-onnx"):
+    if name_clean in ("axiom-onnx", "axiom-onnx-v1", "onnx"):
         return AxiomONNXBackend()
-    if name_clean in ("axiom-transformer", "noor-transformer", "transformer"):
+    if name_clean in ("axiom-transformer", "transformer"):
         return AxiomTransformerBackend()
-    if name_clean == "laya":
-        return LayaBackend()
     return AxiomFastBackend()
