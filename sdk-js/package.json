@@ -1,0 +1,29 @@
+{
+  "name": "axiom-decision-ai",
+  "version": "1.0.0",
+  "description": "TypeScript/JavaScript SDK for Axiom AI - Universal Typed-Decision Engine",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "tsc index.ts --declaration --target ES2020 --module CommonJS",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "axiom-ai",
+    "ai",
+    "decision-engine",
+    "classification",
+    "typed-api",
+    "fastapi",
+    "machine-learning"
+  ],
+  "author": "Axiom AI Developers",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/axiom-ai/axiom-ai.git"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "axiom-decision-ai"
+version = "1.0.0"
+description = "Universal Cross-Platform Sub-1ms Typed-Decision Engine"
+readme = "README.md"
+authors = [{ name = "Axiom AI Developers" }]
+license = { text = "Apache-2.0" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "fastapi>=0.100.0",
+    "uvicorn>=0.20.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+onnx = ["onnxruntime>=1.15.0"]
+transformers = ["torch>=2.0.0", "transformers>=4.30.0"]
+all = ["onnxruntime>=1.15.0", "torch>=2.0.0", "transformers>=4.30.0"]
+
+[project.urls]
+Homepage = "https://github.com/axiom-ai/axiom-ai"
+Documentation = "https://github.com/axiom-ai/axiom-ai#readme"
+Repository = "https://github.com/axiom-ai/axiom-ai"
+
+[project.scripts]
+axiom-server = "server.app:app"

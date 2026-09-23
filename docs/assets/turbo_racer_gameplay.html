@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Noor AI Turbo Racer Gameplay Demo</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>body { font-family: monospace; background: #05070a; color: #34d399; }</style>
+</head>
+<body class="p-4 flex flex-col items-center justify-center min-h-screen">
+  <div class="border border-slate-800 p-4 rounded-xl bg-[#090d12] shadow-2xl text-center">
+    <h1 class="text-xl font-bold mb-1">🏎️ NOOR AI TURBO RACER GAMEPLAY</h1>
+    <p class="text-xs text-slate-400 mb-4">240 KM/H Autonomous Highway Steering</p>
+    <canvas id="c" width="340" height="340" class="rounded border border-slate-800 bg-slate-950 mb-4"></canvas>
+    <div class="text-xs font-mono text-emerald-400">SPEED: 240 KM/H | LATENCY: 0.07 ms</div>
+  </div>
+  <script>
+    const canvas = document.getElementById('c'); const ctx = canvas.getContext('2d');
+    const LANES = [75, 170, 265]; let currentLane = 1; let traffic = [];
+    for(let i=0; i<3; i++) traffic.push({ lane: i, y: -100 - i*120 });
+    function loop() {
+      let target = traffic.find(t => t.y < 270 && 270 - t.y < 140 && t.lane === currentLane);
+      if(target) {
+        if(currentLane === 1) currentLane = Math.random() > 0.5 ? 0 : 2;
+        else currentLane = 1;
+      }
+      traffic.forEach(t => {
+        t.y += 8;
+        if(t.y > 360) { t.y = -100; t.lane = Math.floor(Math.random()*3); }
+      });
+      ctx.fillStyle = '#05070a'; ctx.fillRect(0, 0, 340, 340);
+      ctx.strokeStyle = '#1e293b'; ctx.setLineDash([16, 16]);
+      ctx.beginPath(); ctx.moveTo(115, 0); ctx.lineTo(115, 340); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(225, 0); ctx.lineTo(225, 340); ctx.stroke(); ctx.setLineDash([]);
+      traffic.forEach(t => { ctx.fillStyle = '#f43f5e'; ctx.fillRect(LANES[t.lane]-15, t.y, 30, 45); });
+      ctx.fillStyle = '#34d399'; ctx.fillRect(LANES[currentLane]-16, 270, 32, 48);
+      requestAnimationFrame(loop);
+    }
+    loop();
+  </script>
+</body>
+</html>

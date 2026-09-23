@@ -1,0 +1,12 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+requests>=2.31
+
+# Optional, only needed for DECIDE_BACKEND=transformer:
+# torch>=2.2
+# transformers>=4.40
+
+# Optional, only needed for DECIDE_BACKEND=laya (recommended — pretrained,
+# open-weight, purpose-built for this task; see model.py's LayaBackend):
+# laya
