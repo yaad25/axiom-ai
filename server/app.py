@@ -229,6 +229,55 @@ def calibrate_dataset(req: CalibrateRequest, authorization: str | None = Header(
     }
 
 
+# --------------------------------------------------------------------------
+# ADD-ON 4: API Monetization & Usage Billing System
+# --------------------------------------------------------------------------
+API_TIERS = {
+    "free": {"price": "$0/mo", "quota": 1000, "rate_limit": "10 req/min"},
+    "pro": {"price": "$29/mo", "quota": 1000000, "rate_limit": "1000 req/min"},
+    "enterprise": {"price": "$299/mo", "quota": "Unlimited", "rate_limit": "Dedicated Instance"}
+}
+
+CUSTOMER_USAGE: dict[str, dict] = {}
+
+
+@app.get("/v1/billing/plans")
+def get_billing_plans():
+    return {
+        "engine": "Axiom AI SaaS Engine",
+        "currency": "USD",
+        "plans": API_TIERS
+    }
+
+
+@app.post("/v1/billing/keys/create")
+def create_api_key(plan: str = "pro", customer_email: str = "client@example.com"):
+    if plan not in API_TIERS:
+        raise HTTPException(status_code=400, detail="Invalid plan tier. Choose: free, pro, enterprise")
+
+    import secrets
+    new_key = f"ax_live_{secrets.token_hex(16)}"
+    CUSTOMER_USAGE[new_key] = {
+        "email": customer_email,
+        "plan": plan,
+        "created_at": time.time(),
+        "requests_used": 0
+    }
+    return {
+        "status": "active",
+        "api_key": new_key,
+        "plan": plan,
+        "details": API_TIERS[plan]
+    }
+
+
+@app.get("/v1/billing/usage")
+def get_usage(api_key: str):
+    if api_key not in CUSTOMER_USAGE:
+        return {"status": "inactive", "message": "Valid API key required"}
+    return CUSTOMER_USAGE[api_key]
+
+
 @app.get("/v1/info")
 def info():
     return {
@@ -237,11 +286,12 @@ def info():
         "platform": platform.system(),
         "architecture": platform.machine(),
         "active_backend": backend.name,
-        "supported_backends": ["axiom-fast", "axiom-multilingual", "axiom-onnx", "axiom-transformer", "laya"],
-        "add_ons_enabled": ["rationale_audit", "schema_fast_path", "calibration_optimizer", "lru_cache"]
+        "supported_backends": ["axiom-fast", "axiom-multilingual", "axiom-onnx", "axiom-transformer"],
+        "add_ons_enabled": ["rationale_audit", "schema_fast_path", "calibration_optimizer", "api_monetization_billing"]
     }
 
 
 @app.get("/healthz")
 def healthz():
     return {"status": "ok", "engine": "Axiom AI", "backend": backend.name}
+

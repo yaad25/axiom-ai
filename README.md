@@ -167,6 +167,31 @@ python examples/bench.py sample.jsonl --targets axiom
 
 ---
 
+## 💰 Commercial API Monetization
+
+Host your own paid decision API with Axiom AI:
+
+- **Free Tier**: `1,000 req/day` ($0/mo)
+- **Pro Tier**: `1,000,000 req/mo` ($29/mo)
+- **Enterprise Tier**: `Dedicated Instance` ($299/mo)
+
+Check API pricing & create paid client keys:
+```bash
+curl http://localhost:8000/v1/billing/plans
+```
+
+---
+
+## 💖 Sponsor & Donate
+
+If you find Axiom AI useful, consider supporting open-source development:
+
+[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?style=for-the-badge&logo=github)](https://github.com/sponsors/yaad25)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/yaad25)
+[![Patreon](https://img.shields.io/badge/Patreon-FF424D?style=for-the-badge&logo=patreon&logoColor=white)](https://patreon.com/yaad25)
+
+---
+
 ## 🛡️ License
 
 Apache 2.0. 100% Free & Open-Source.
