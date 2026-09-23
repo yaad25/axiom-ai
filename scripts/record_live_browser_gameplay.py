@@ -1,4 +1,5 @@
 import os
+import io
 import time
 from PIL import Image
 from playwright.sync_api import sync_playwright
@@ -35,7 +36,8 @@ def record_gameplay(html_path, gif_output_path, num_frames=35, delay=0.08):
         )
         print(f"Saved real recorded gameplay GIF to {gif_output_path} ({len(frames)} frames)")
 
-import io
 if __name__ == "__main__":
     record_gameplay("docs/assets/snake_gameplay.html", "docs/assets/snake_gameplay.gif")
     record_gameplay("docs/assets/ping_pong_gameplay.html", "docs/assets/ping_pong.gif")
+    record_gameplay("docs/assets/space_defense_gameplay.html", "docs/assets/space_defense.gif")
+    record_gameplay("docs/assets/maze_runner_gameplay.html", "docs/assets/maze_runner.gif")

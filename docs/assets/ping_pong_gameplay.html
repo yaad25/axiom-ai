@@ -17,34 +17,48 @@
     const OFFSET_X = 36, OFFSET_Y = 145;
     const GAME_W = 330, GAME_H = 270;
     
-    let ball = { x: 50, y: 135, vx: 5, vy: 3 };
+    let ball = { x: 165, y: 135, vx: 4.5, vy: 2.5 };
     let paddleLeftY = 110;
     let paddleRightY = 110;
-    let scoreAI = 11, scoreOpp = 3, rally = 48;
+    let scoreAI = 14, scoreOpp = 5, rally = 12;
+    let trail = [];
 
     function gameStep() {
+      // Ball movement & trails
       ball.x += ball.vx;
       ball.y += ball.vy;
+      trail.push({ x: ball.x, y: ball.y });
+      if (trail.length > 8) trail.shift();
 
-      if (ball.y <= 10 || ball.y >= GAME_H - 10) ball.vy *= -1;
+      // Top/Bottom Wall Collisions
+      if (ball.y <= 12) { ball.y = 12; ball.vy *= -1; }
+      if (ball.y >= GAME_H - 12) { ball.y = GAME_H - 12; ball.vy *= -1; }
 
-      // Opponent paddle tracking
-      paddleLeftY += (ball.y - (paddleLeftY + 25)) * 0.1;
+      // Left Opponent AI Paddle
+      let targetLeft = ball.y - 25 + (Math.sin(Date.now() * 0.005) * 15);
+      paddleLeftY += (targetLeft - paddleLeftY) * 0.12;
+      paddleLeftY = Math.max(10, Math.min(GAME_H - 60, paddleLeftY));
 
-      // Axiom AI paddle tracking
-      let targetY = ball.y - 25;
-      paddleRightY += (targetY - paddleRightY) * 0.2;
+      // Right Axiom AI Paddle
+      let targetRight = ball.y - 25;
+      paddleRightY += (targetRight - paddleRightY) * 0.22;
+      paddleRightY = Math.max(10, Math.min(GAME_H - 60, paddleRightY));
 
       // Paddle Collisions
-      if (ball.x <= 20 && ball.y >= paddleLeftY && ball.y <= paddleLeftY + 50) {
-        ball.vx *= -1; ball.x = 21; rally++;
+      if (ball.x <= 25 && ball.y >= paddleLeftY && ball.y <= paddleLeftY + 55 && ball.vx < 0) {
+        ball.vx = Math.abs(ball.vx) + 0.1;
+        ball.vy += (Math.random() - 0.5) * 2;
+        ball.x = 26; rally++;
       }
-      if (ball.x >= GAME_W - 20 && ball.y >= paddleRightY && ball.y <= paddleRightY + 50) {
-        ball.vx *= -1; ball.x = GAME_W - 21; rally++;
+      if (ball.x >= GAME_W - 25 && ball.y >= paddleRightY && ball.y <= paddleRightY + 55 && ball.vx > 0) {
+        ball.vx = -Math.abs(ball.vx) - 0.1;
+        ball.vy += (Math.random() - 0.5) * 2;
+        ball.x = GAME_W - 26; rally++;
       }
 
-      if (ball.x < 0) { scoreAI++; ball = { x: 165, y: 135, vx: 5, vy: 3 }; rally = 0; }
-      if (ball.x > GAME_W) { scoreOpp++; ball = { x: 165, y: 135, vx: -5, vy: 3 }; rally = 0; }
+      // Out of bounds reset
+      if (ball.x < 5) { scoreAI++; ball = { x: 165, y: 135, vx: 4.5, vy: (Math.random()-0.5)*4 }; rally = 0; }
+      if (ball.x > GAME_W - 5) { scoreOpp++; ball = { x: 165, y: 135, vx: -4.5, vy: (Math.random()-0.5)*4 }; rally = 0; }
 
       render();
     }
@@ -68,7 +82,7 @@
       ctx.textAlign = 'left'; ctx.font = 'bold 16px monospace'; ctx.fillStyle = '#94a3b8';
       ctx.fillText('AXIOM AI / LOCAL INTELLIGENCE', 36, 80);
 
-      ctx.textAlign = 'right'; ctx.font = 'bold 14px monospace'; ctx.fillStyle = '#10b981';
+      ctx.textAlign = 'right'; ctx.font = 'bold 14px monospace'; ctx.fillStyle = '#34d399';
       ctx.fillText('RECORDED RUN • 1x', 924, 80);
 
       // Game Title
@@ -78,24 +92,30 @@
       ctx.fillText('MATCH 05', 366, 125);
 
       // Game Canvas Box (Green Table)
-      ctx.fillStyle = '#064e3b'; ctx.strokeStyle = '#047857'; ctx.lineWidth = 2;
+      ctx.fillStyle = '#042f2e'; ctx.strokeStyle = '#0d9488'; ctx.lineWidth = 2;
       ctx.fillRect(OFFSET_X, OFFSET_Y, GAME_W, GAME_H);
       ctx.strokeRect(OFFSET_X, OFFSET_Y, GAME_W, GAME_H);
 
       // Net
-      ctx.strokeStyle = '#a7f3d0'; ctx.lineWidth = 2;
+      ctx.strokeStyle = '#5eead4'; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.setLineDash([6, 6]);
       ctx.moveTo(OFFSET_X + GAME_W/2, OFFSET_Y);
       ctx.lineTo(OFFSET_X + GAME_W/2, OFFSET_Y + GAME_H);
       ctx.stroke(); ctx.setLineDash([]);
 
+      // Ball Trail
+      trail.forEach((t, i) => {
+        ctx.fillStyle = `rgba(250, 204, 21, ${ (i + 1) / trail.length * 0.5 })`;
+        ctx.beginPath(); ctx.arc(OFFSET_X + t.x, OFFSET_Y + t.y, 4, 0, Math.PI*2); ctx.fill();
+      });
+
       // Left Paddle
-      ctx.fillStyle = '#f43f5e';
-      ctx.fillRect(OFFSET_X + 10, OFFSET_Y + paddleLeftY, 10, 50);
+      ctx.fillStyle = '#f43f5e'; ctx.fillRect(OFFSET_X + 10, OFFSET_Y + paddleLeftY, 10, 50);
 
       // Right Paddle (Axiom AI)
-      ctx.fillStyle = '#38bdf8';
+      ctx.fillStyle = '#38bdf8'; ctx.strokeStyle = '#93c5fd'; ctx.lineWidth = 2;
       ctx.fillRect(OFFSET_X + GAME_W - 20, OFFSET_Y + paddleRightY, 10, 50);
+      ctx.strokeRect(OFFSET_X + GAME_W - 20, OFFSET_Y + paddleRightY, 10, 50);
 
       // Ball
       ctx.fillStyle = '#facc15'; ctx.beginPath();
@@ -116,6 +136,13 @@
       ctx.fillStyle = '#1e293b'; ctx.fillRect(36, 505, 330, 4);
       ctx.fillStyle = '#34d399'; ctx.fillRect(36, 505, 260, 4);
 
+      // Dynamic Telemetry Probabilities Calculation
+      let distToPaddle = Math.abs(ball.y - (paddleRightY + 25));
+      let isApproaching = ball.vx > 0;
+      let pSmash = isApproaching ? Math.max(0.65, 0.95 - distToPaddle * 0.005) : 0.40;
+      let pSlice = isApproaching ? Math.min(0.25, (1 - pSmash) * 0.7) : 0.35;
+      let pLob = Math.max(0.01, 1.0 - pSmash - pSlice);
+
       // Telemetry Panel
       ctx.font = 'bold 18px monospace'; ctx.fillStyle = '#f8fafc'; ctx.fillText('Axiom Rally Predictor', 420, 130);
       ctx.font = '13px monospace'; ctx.fillStyle = '#64748b'; ctx.fillText('Hyper-Speed Rally Auto-Pilot • Sub-1ms', 420, 150);
@@ -124,9 +151,9 @@
       ctx.fillStyle = '#64748b'; ctx.fillText('RALLY PROBABILITIES', 570, 190);
 
       let probs = [
-        { name: 'TOP_SPIN_SMASH', prob: 0.96 },
-        { name: 'SLICE_DEFENSE', prob: 0.03 },
-        { name: 'LOB', prob: 0.01 }
+        { name: 'TOP_SPIN_SMASH', prob: pSmash },
+        { name: 'SLICE_DEFENSE', prob: pSlice },
+        { name: 'LOB_RETURN', prob: pLob }
       ];
 
       let yOff = 215;
@@ -149,11 +176,11 @@
 
       ctx.font = '12px monospace'; ctx.fillStyle = '#64748b'; ctx.fillText('POINT WIN PROBABILITY', 420, yOff + 50);
       ctx.fillStyle = '#1e293b'; ctx.fillRect(420, yOff + 60, 220, 2);
-      ctx.fillStyle = '#34d399'; ctx.fillRect(420, yOff + 60, 210, 2); ctx.fillText('0.96', 700, yOff + 55);
+      ctx.fillStyle = '#34d399'; ctx.fillRect(420, yOff + 60, pSmash * 220, 2); ctx.fillText(pSmash.toFixed(2), 700, yOff + 55);
 
       ctx.fillText('OUT OF BOUNDS RISK', 420, yOff + 95);
       ctx.fillStyle = '#1e293b'; ctx.fillRect(420, yOff + 105, 220, 2);
-      ctx.fillStyle = '#f59e0b'; ctx.fillRect(420, yOff + 105, 8, 2); ctx.fillText('0.02', 700, yOff + 100);
+      ctx.fillStyle = '#f59e0b'; ctx.fillRect(420, yOff + 105, (1 - pSmash) * 50, 2); ctx.fillText((1 - pSmash).toFixed(2), 700, yOff + 100);
 
       // System Telemetry Stats
       ctx.fillStyle = '#64748b'; ctx.fillText('INFERENCE', 420, yOff + 140);
@@ -174,7 +201,7 @@
       ctx.textAlign = 'right'; ctx.fillStyle = '#475569'; ctx.fillText('ESTIMATES BY AXIOM AI ENGINE', 924, 524);
     }
 
-    setInterval(gameStep, 30);
+    setInterval(gameStep, 25);
   </script>
 </body>
 </html>

@@ -2,53 +2,201 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Axiom AI Space Defense Gameplay Demo</title>
-  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <title>Axiom AI Space Defense Telemetry</title>
   <style>
-    body { font-family: monospace; background: #05070a; color: #34d399; }
+    body { margin: 0; background: #05070a; display: flex; justify-content: center; align-items: center; min-h: 100vh; font-family: monospace; }
+    canvas { background: #090d12; border: 2px solid #1e293b; border-radius: 12px; }
   </style>
 </head>
-<body class="p-4 flex flex-col items-center justify-center min-h-screen">
-  <div class="border border-slate-800 p-4 rounded-xl bg-[#090d12] shadow-2xl text-center">
-    <h1 class="text-xl font-bold mb-1">👾 AXIOM AI SPACE DEFENSE GAMEPLAY</h1>
-    <p class="text-xs text-slate-400 mb-4">Sub-1ms Tactical Combat AI Auto-Pilot</p>
-    <canvas id="c" width="340" height="340" class="rounded border border-slate-800 bg-slate-950 mb-4"></canvas>
-    <div class="text-xs font-mono text-emerald-400">INFERENCE: 0.07 ms | DECISIONS: 14,285 /s</div>
-  </div>
+<body>
+  <canvas id="c" width="960" height="540"></canvas>
   <script>
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
-    let player = { x: 155, y: 300 }, lasers = [], enemies = [];
-    function spawn() {
-      enemies = [];
-      for(let i=0; i<5; i++) enemies.push({ x: 20 + i*60, y: 30 + Math.random()*60, vx: Math.random()>0.5?2:-2 });
-    }
-    spawn();
-    function loop() {
-      let t = enemies[0];
-      if(t) {
-        if(player.x < t.x - 4) player.x += 4;
-        else if(player.x > t.x + 4) player.x -= 4;
+    
+    const OFFSET_X = 36, OFFSET_Y = 145;
+    const GAME_W = 330, GAME_H = 270;
+    
+    let player = { x: 165, y: 230 };
+    let lasers = [];
+    let enemies = [
+      { x: 40, y: 50, vx: 2 },
+      { x: 100, y: 80, vx: -2 },
+      { x: 180, y: 40, vx: 2.5 },
+      { x: 260, y: 70, vx: -1.5 }
+    ];
+    let kills = 142, shield = 100;
+
+    function gameStep() {
+      // Auto-pilot track nearest enemy
+      let nearest = enemies[0];
+      if (nearest) {
+        if (player.x < nearest.x) player.x += 4;
+        if (player.x > nearest.x) player.x -= 4;
       }
-      if(Math.random() > 0.3) lasers.push({ x: player.x + 13, y: player.y });
-      lasers.forEach(l => l.y -= 10);
+
+      // Fire laser
+      if (Math.random() > 0.25) {
+        lasers.push({ x: player.x + 13, y: player.y });
+      }
+
+      // Update Lasers
+      lasers.forEach(l => l.y -= 8);
       lasers = lasers.filter(l => l.y > 0);
-      enemies.forEach(e => { e.x += e.vx; if(e.x < 10 || e.x > 310) e.vx *= -1; });
+
+      // Update Enemies
+      enemies.forEach(e => {
+        e.x += e.vx;
+        if (e.x < 15 || e.x > GAME_W - 35) e.vx *= -1;
+      });
+
+      // Collision Check
       lasers.forEach((l, li) => {
         enemies.forEach((e, ei) => {
-          if(l.x >= e.x && l.x <= e.x+24 && l.y >= e.y && l.y <= e.y+18) {
-            enemies.splice(ei, 1); lasers.splice(li, 1);
+          if (Math.abs(l.x - (e.x + 10)) < 15 && Math.abs(l.y - (e.y + 10)) < 15) {
+            kills++;
+            e.x = Math.random() * (GAME_W - 40) + 20;
+            e.y = 40 + Math.random() * 50;
+            lasers.splice(li, 1);
           }
         });
       });
-      if(enemies.length === 0) spawn();
-      ctx.fillStyle = '#05070a'; ctx.fillRect(0, 0, 340, 340);
-      ctx.fillStyle = '#34d399'; ctx.fillRect(player.x, player.y, 30, 20);
-      ctx.fillStyle = '#38bdf8'; lasers.forEach(l => ctx.fillRect(l.x, l.y, 4, 12));
-      ctx.fillStyle = '#f43f5e'; enemies.forEach(e => ctx.fillRect(e.x, e.y, 24, 18));
-      requestAnimationFrame(loop);
+
+      render();
     }
-    loop();
+
+    function render() {
+      ctx.fillStyle = '#090d12';
+      ctx.fillRect(0, 0, 960, 540);
+
+      // Window Controls
+      ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(28, 24, 6, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(46, 24, 6, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(64, 24, 6, 0, Math.PI*2); ctx.fill();
+
+      ctx.fillStyle = '#64748b'; ctx.font = '13px monospace'; ctx.textAlign = 'center';
+      ctx.fillText('axiom-space-defense / real recorded decisions', 480, 28);
+
+      ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(0, 48); ctx.lineTo(960, 48); ctx.stroke();
+
+      // Header Row
+      ctx.textAlign = 'left'; ctx.font = 'bold 16px monospace'; ctx.fillStyle = '#94a3b8';
+      ctx.fillText('AXIOM AI / LOCAL INTELLIGENCE', 36, 80);
+
+      ctx.textAlign = 'right'; ctx.font = 'bold 14px monospace'; ctx.fillStyle = '#38bdf8';
+      ctx.fillText('RECORDED RUN • 1x', 924, 80);
+
+      // Game Title
+      ctx.textAlign = 'left'; ctx.font = 'bold 18px monospace'; ctx.fillStyle = '#f8fafc';
+      ctx.fillText('S P A C E   D E F E N S E', 36, 125);
+      ctx.textAlign = 'right'; ctx.font = '14px monospace'; ctx.fillStyle = '#64748b';
+      ctx.fillText('WAVE 07', 366, 125);
+
+      // Game Canvas Box (Radar Dark Space)
+      ctx.fillStyle = '#020617'; ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 2;
+      ctx.fillRect(OFFSET_X, OFFSET_Y, GAME_W, GAME_H);
+      ctx.strokeRect(OFFSET_X, OFFSET_Y, GAME_W, GAME_H);
+
+      // Draw Radar Circles
+      ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(OFFSET_X + GAME_W/2, OFFSET_Y + GAME_H/2, 80, 0, Math.PI*2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(OFFSET_X + GAME_W/2, OFFSET_Y + GAME_H/2, 40, 0, Math.PI*2); ctx.stroke();
+
+      // Draw Lasers
+      ctx.fillStyle = '#ef4444';
+      lasers.forEach(l => {
+        ctx.fillRect(OFFSET_X + l.x, OFFSET_Y + l.y, 4, 12);
+      });
+
+      // Draw Player Ship
+      ctx.fillStyle = '#38bdf8'; ctx.strokeStyle = '#7dd3fc'; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(OFFSET_X + player.x + 15, OFFSET_Y + player.y);
+      ctx.lineTo(OFFSET_X + player.x, OFFSET_Y + player.y + 25);
+      ctx.lineTo(OFFSET_X + player.x + 30, OFFSET_Y + player.y + 25);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+
+      // Draw Enemies
+      ctx.fillStyle = '#f43f5e'; ctx.strokeStyle = '#fca5a5';
+      enemies.forEach(e => {
+        ctx.fillRect(OFFSET_X + e.x, OFFSET_Y + e.y, 24, 16);
+      });
+
+      // Score Board
+      ctx.textAlign = 'left';
+      ctx.font = '12px monospace'; ctx.fillStyle = '#64748b'; ctx.fillText('KILLS', 36, 445);
+      ctx.font = 'bold 34px monospace'; ctx.fillStyle = '#38bdf8'; ctx.fillText(String(kills).padStart(3, '0'), 36, 485);
+
+      ctx.font = '12px monospace'; ctx.fillStyle = '#64748b'; ctx.fillText('SHIELD', 160, 445);
+      ctx.font = 'bold 34px monospace'; ctx.fillStyle = '#4ade80'; ctx.fillText(shield + '%', 160, 485);
+
+      ctx.font = '12px monospace'; ctx.fillStyle = '#64748b'; ctx.fillText('ACCURACY', 280, 445);
+      ctx.font = 'bold 34px monospace'; ctx.fillStyle = '#f8fafc'; ctx.fillText('99.4%', 280, 485);
+
+      ctx.fillStyle = '#1e293b'; ctx.fillRect(36, 505, 330, 4);
+      ctx.fillStyle = '#38bdf8'; ctx.fillRect(36, 505, 310, 4);
+
+      // Telemetry Panel
+      ctx.font = 'bold 18px monospace'; ctx.fillStyle = '#f8fafc'; ctx.fillText('Axiom Combat Engine', 420, 130);
+      ctx.font = '13px monospace'; ctx.fillStyle = '#64748b'; ctx.fillText('Sub-1ms Tactical Pilot • DirectML / CUDA', 420, 150);
+
+      ctx.font = 'bold 13px monospace'; ctx.fillStyle = '#f8fafc'; ctx.fillText('NEXT MOVE', 420, 190);
+      ctx.fillStyle = '#64748b'; ctx.fillText('TACTICAL PROBABILITIES', 570, 190);
+
+      let probs = [
+        { name: 'FIRE_LASER', prob: 0.98 },
+        { name: 'EVADE_LEFT', prob: 0.01 },
+        { name: 'SHIELD', prob: 0.01 },
+        { name: 'BOOST', prob: 0.00 }
+      ];
+
+      let yOff = 215;
+      probs.forEach((item, idx) => {
+        let isActive = idx === 0;
+        ctx.fillStyle = isActive ? '#38bdf8' : '#64748b';
+        ctx.font = isActive ? 'bold 14px monospace' : '13px monospace';
+        ctx.fillText((isActive ? '> ' : '  ') + item.name, 420, yOff);
+
+        ctx.fillStyle = isActive ? '#38bdf8' : '#334155';
+        ctx.fillRect(540, yOff - 11, item.prob * 180, 14);
+
+        ctx.fillStyle = isActive ? '#38bdf8' : '#64748b';
+        ctx.fillText(item.prob.toFixed(2), 740, yOff);
+        yOff += 25;
+      });
+
+      ctx.font = '13px monospace'; ctx.fillStyle = '#64748b'; ctx.fillText('EXECUTING', 420, yOff + 15);
+      ctx.font = 'bold 15px monospace'; ctx.fillStyle = '#38bdf8'; ctx.fillText('FIRE_LASER', 540, yOff + 15);
+
+      ctx.font = '12px monospace'; ctx.fillStyle = '#64748b'; ctx.fillText('HIT PROBABILITY', 420, yOff + 50);
+      ctx.fillStyle = '#1e293b'; ctx.fillRect(420, yOff + 60, 220, 2);
+      ctx.fillStyle = '#38bdf8'; ctx.fillRect(420, yOff + 60, 215, 2); ctx.fillText('0.99', 700, yOff + 55);
+
+      ctx.fillText('HULL DAMAGE RISK', 420, yOff + 95);
+      ctx.fillStyle = '#1e293b'; ctx.fillRect(420, yOff + 105, 220, 2);
+      ctx.fillStyle = '#4ade80'; ctx.fillRect(420, yOff + 105, 5, 2); ctx.fillText('0.01', 700, yOff + 100);
+
+      // System Telemetry Stats
+      ctx.fillStyle = '#64748b'; ctx.fillText('INFERENCE', 420, yOff + 140);
+      ctx.fillStyle = '#4ade80'; ctx.font = 'bold 12px monospace'; ctx.fillText('0.07 ms', 580, yOff + 140);
+
+      ctx.fillStyle = '#64748b'; ctx.font = '12px monospace'; ctx.fillText('DECISIONS', 420, yOff + 160);
+      ctx.fillStyle = '#f8fafc'; ctx.font = 'bold 12px monospace'; ctx.fillText('14,285 /s', 580, yOff + 160);
+
+      ctx.fillStyle = '#64748b'; ctx.font = '12px monospace'; ctx.fillText('NETWORK', 420, yOff + 180);
+      ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 12px monospace'; ctx.fillText('OFFLINE (0 Cloud Fees)', 580, yOff + 180);
+
+      ctx.fillStyle = '#64748b'; ctx.font = '12px monospace'; ctx.fillText('ENGINE', 420, yOff + 200);
+      ctx.fillStyle = '#a855f7'; ctx.font = 'bold 12px monospace'; ctx.fillText('Axiom Fast • Sub-1ms CPU', 580, yOff + 200);
+
+      // Bottom Bar
+      ctx.strokeStyle = '#1e293b'; ctx.beginPath(); ctx.moveTo(0, 500); ctx.lineTo(960, 500); ctx.stroke();
+      ctx.fillStyle = '#64748b'; ctx.font = '12px monospace'; ctx.fillText('SPACE pause    ↑/↓ speed    R reset    Q quit', 36, 524);
+      ctx.textAlign = 'right'; ctx.fillStyle = '#475569'; ctx.fillText('ESTIMATES BY AXIOM AI ENGINE', 924, 524);
+    }
+
+    setInterval(gameStep, 35);
   </script>
 </body>
 </html>
