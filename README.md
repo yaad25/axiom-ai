@@ -180,15 +180,11 @@ Check API pricing & create paid client keys:
 curl http://localhost:8000/v1/billing/plans
 ```
 
----
+## 💖 Support Development
 
-## 💖 Sponsor & Donate
+If you find Axiom AI useful, consider buying us a coffee to support open-source development:
 
-If you find Axiom AI useful, consider supporting open-source development:
-
-[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?style=for-the-badge&logo=github)](https://github.com/sponsors/yaad25)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/yaad25)
-[![Patreon](https://img.shields.io/badge/Patreon-FF424D?style=for-the-badge&logo=patreon&logoColor=white)](https://patreon.com/yaad25)
 
 ---
 
