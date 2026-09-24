@@ -61,9 +61,23 @@ def _stem(word: str) -> str:
     return word
 
 
+_NEGATION_WORDS = {"not", "never", "no", "without", "except"}
+
 def _tokenize(text: str) -> list[str]:
     raw = _WORD_RE.findall(text.lower())
-    return [_stem(w) for w in raw if w not in _STOPWORDS]
+    tokens = []
+    i = 0
+    while i < len(raw):
+        w = raw[i]
+        if w in _NEGATION_WORDS and i + 1 < len(raw):
+            next_w = raw[i + 1]
+            tokens.append(f"not_{_stem(next_w)}")
+            i += 2
+        else:
+            if w not in _STOPWORDS:
+                tokens.append(_stem(w))
+            i += 1
+    return tokens
 
 
 def _char_ngram_similarity(s1: str, s2: str, n: int = 3) -> float:
@@ -511,4 +525,9 @@ class TypedDecider:
     def decide(self, state: Any, question: Question | dict) -> dict:
         q_dict = question.to_dict() if isinstance(question, Question) else question
         return self.backend.decide(state, q_dict)
+
+    def eval_dag_transition(self, current_node_state: Any, candidate_actions: list[str]) -> dict:
+        """State-Machine Transition Function: Argmax_a P(a | S_t) over DAG candidate edges in <1ms."""
+        q = Question("What is the optimal next state transition edge?", candidate_actions)
+        return self.decide(current_node_state, q)
 
