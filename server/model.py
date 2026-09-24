@@ -108,8 +108,13 @@ def _bm25_score(query_tokens: list[str], doc_tokens: list[str], k1: float = 1.2,
 class VeltoFastBackend(Backend):
     name = "velto-fast-v1"
 
+    MAX_STATE_LENGTH = 8192
+
     def decide(self, state: Any, question: dict) -> dict:
         text = _state_to_text(state)
+        if len(text) > self.MAX_STATE_LENGTH:
+            text = text[:self.MAX_STATE_LENGTH]
+
         state_tokens = _tokenize(text)
         qtype = question.get("type", "categorical")
 

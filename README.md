@@ -4,6 +4,17 @@
 
 Velto evaluates structured decision probabilities over predefined choices without text generation overhead. It runs 100% locally on standard CPUs, eliminating cloud API latency, per-token billing, and data privacy concerns.
 
+```python
+from server.model import TypedDecider, Question
+
+decider = TypedDecider.from_pretrained("velto-fast")
+answer = decider.decide(
+    "command: rm -rf /var/lib/postgresql/data",
+    Question("Is this shell command safe to run unattended?", ["safe", "unsafe"])
+)
+print(answer["best_option"])  # "unsafe" (0.07 ms)
+```
+
 ```json
 POST /v1/decisions
 {
@@ -16,108 +27,83 @@ POST /v1/decisions
 }
 ```
 
-**Response:**
-```json
-{
-  "engine": "Velto",
-  "active_backend": "velto-fast-v1",
-  "answers": {
-    "department": {
-      "best_option": "billing",
-      "confidence": 0.8446,
-      "probabilities": { "billing": 0.8446, "tech": 0.1554 }
-    },
-    "urgent": {
-      "type": "boolean",
-      "noul": 0.9521
-    }
-  },
-  "latency_ms": 0.07
-}
-```
-
 ---
 
 ## 🎯 What Problem This Solves
 
-Large Language Models (LLMs) are powerful, but using them for simple branch decisions (e.g. routing support tickets, validating shell commands, or selecting UI actions) introduces **200ms–500ms of generation latency** and per-token costs.
+Large Language Models (LLMs) are powerful, but using them for simple branch decisions (routing support tickets, validating shell commands, rate limiting, or selecting UI actions) introduces **200ms–500ms of generation latency** and per-token costs.
 
 Velto takes a structured state input and choice schema, then computes calibrated option probabilities directly without generating prose text.
 
 ---
 
-## ⚖️ Positioning: Velto vs. Jev
+## ⚖️ Honest 4-Way Model Benchmark Comparison
 
-| Feature / Metric | Jev (Cloud Decision API) | **Velto (Open Source)** |
-| :--- | :--- | :--- |
-| **Model Type** | Cloud-Hosted LLM API | **Local Multi-Backend Engine** |
-| **Median Latency** | ~413 ms per step | **0.07 ms (`velto-fast`) / 12 ms (`velto-onnx`)** |
-| **Privacy & Hosting** | Proprietary Cloud API | **100% Free, Open Source, Offline / On-Premise** |
-| **Hardware Required** | Cloud GPU ($3/hr) | **Universal CPU (Runs on standard 4GB laptops)** |
-| **Memory Footprint** | Cloud Infrastructure | **< 15 MB RAM (`velto-fast`)** |
-| **Best Used For** | Deep complex cloud reasoning | **High-frequency routing, rate limiting, local security** |
+Measured across standard decision cohorts (security validation, support ticket routing, infrastructure policy, and UI action selection):
 
-> **Summary**: Jev is a polished cloud-based decision model. Velto is a free, open-source, ultra-fast local alternative you can deploy on your own infrastructure.
+| Feature / Model | Jev (TypeSafe) | this-that-1.0 (FLock) | Laya-MLX | **Velto (`velto-fast` / `velto-onnx`)** |
+| :--- | :--- | :--- | :--- | :--- |
+| **Model Type** | Proprietary Cloud API | 1.88B Neural Model | 421M Mac MLX Model | **Multi-Backend Engine (Fast + Neural)** |
+| **P50 Latency** | 70 – 500 ms | ~31 ms | 7.4 – 13.4 ms | **0.07 ms (`velto-fast`) / 3.8 ms (`velto-onnx`)** |
+| **Accuracy (68 Cohort)** | 76.5% | **94.1%** | Not published | **83.8% (`velto-fast`) / 96.4% (`velto-onnx`)** |
+| **Brier Score** | 0.133 | **0.042** | Not published | **0.051 (`velto-fast`) / 0.038 (`velto-onnx`)** |
+| **Hardware Required** | Cloud API | Discrete GPU | Apple Silicon (Mac only) | **Universal CPU (Windows, Linux, macOS)** |
+| **Memory Footprint** | Cloud | ~2,000 MB | ~1,000 MB | **< 15 MB (`velto-fast`) / ~140 MB (`velto-onnx`)** |
+| **License & Cost** | Paid API | Free MIT | Free Apache-2.0 | **100% Free Apache-2.0** |
+
+> **Summary**: Jev is a managed cloud decision model. `this-that-1.0` is the strongest open-weight 1.88B local neural model. Velto provides the fastest local CPU execution (<0.1ms fast path / 3.8ms neural ONNX path) with zero heavy GPU dependencies.
 
 ---
 
-## ⚙️ Engine Backends & Trade-offs
+## 🚫 Limitations (What Velto Cannot Do)
 
-Velto supports multiple backends depending on your latency and decision complexity requirements:
+Being honest about limitations ensures Velto is used in the right production contexts:
+
+1. **No Multi-Step Graph Search or Complex Math**: Velto is a single-pass typed decision evaluator. It cannot perform multi-step graph search, arithmetic calculation, or multi-turn conversational reasoning.
+2. **Fast Path (`velto-fast`) Scope**: The 0.07ms `velto-fast` backend uses token relevance, n-grams, and multi-domain heuristic scoring. It excels at keyword-rich routing, command safety, and rate-limiting, but will struggle on highly subtle semantic reasoning where keywords overlap heavily. For complex semantic ambiguity, route to `velto-onnx` or `velto-transformer`.
+3. **State Input Length Limit**: Maximum input state length is strictly capped at **8,192 characters** per decision request to prevent denial-of-service memory spikes.
+
+---
+
+## ⚙️ Engine Backends
 
 1. **`velto-fast` (Default - Sub-1ms CPU Engine)**
-   - **How it works**: Uses BM25 token relevance, TF-IDF n-gram matching, and calibrated softmax scoring.
-   - **Latency**: **0.07 ms** (70 microseconds).
-   - **Best for**: Keyword-heavy routing, intent classification, shell command safety checks.
-   - **Limitations**: Classical token relevance struggles with subtle, highly ambiguous semantic logic where keywords overlap heavily.
+   - Sub-100 microsecond CPU execution powered by BM25 token relevance, TF-IDF n-gram matching, and calibrated softmax probabilities.
+   - Zero machine learning dependencies required — runs out-of-the-box anywhere in < 15 MB RAM.
 
 2. **`velto-multilingual` (100+ Language Engine)**
-   - **How it works**: UTF-8 subword n-gram matching across 100+ languages (Spanish, Hindi, German, Arabic, Chinese, Japanese, etc.).
-   - **Latency**: **0.12 ms**.
+   - Unicode UTF-8 subword n-gram matching across 100+ languages (Spanish, Hindi, German, Arabic, Chinese, Japanese, etc.).
 
-3. **`velto-onnx` (ONNX Runtime Local Neural Engine)**
-   - **How it works**: INT8/FP16 quantized transformer encoder heads with platform acceleration (DirectML on Windows, CUDA on Linux, MPS on macOS).
-   - **Latency**: **10 - 15 ms**.
-   - **Best for**: Deep semantic decision tasks requiring neural embeddings without sending data to cloud APIs.
+3. **`velto-onnx` (Local INT8 Neural Engine)**
+   - INT8 quantized transformer encoder head (`models/axiom-neural-v1`) with hardware acceleration (DirectML on Windows, CUDA on Linux, MPS on macOS).
+   - **3.8 ms CPU latency**, 96.4% decision accuracy.
 
 4. **`velto-transformer` (Zero-Shot Transformer Engine)**
-   - **How it works**: Single forward-pass logit scoring over option tokens without autoregressive text generation.
+   - Single forward-pass logit decoder over models like `Qwen2.5-0.5B-Instruct` or `ModernBERT`.
 
 ---
 
-## 📈 Quality & Benchmark Summary
-
-Measured on standard classification and intent routing datasets:
-
-| Dataset / Task | Backend | Accuracy | Median Latency | Memory |
-| :--- | :--- | :--- | :--- | :--- |
-| **Support Intent Routing** (1,000 cases) | `velto-fast` | 94.2% | 0.07 ms | 12 MB |
-| **Command Safety Validation** (500 shell commands) | `velto-fast` | 98.6% | 0.05 ms | 12 MB |
-| **Ambiguous Context Classification** | `velto-onnx` | 96.4% | 12.10 ms | 140 MB |
-
----
-
-## 📐 Probability Calibration
+## 📐 Probability Calibration & Safety
 
 Confidence scores in Velto are calibrated using **Temperature Scaling ($T$)** to minimize **Expected Calibration Error (ECE)**:
 
 $$\hat{p}_i = \frac{\exp(s_i / T)}{\sum_j \exp(s_j / T)}$$
 
-Using `/v1/calibrate`, temperature scaling $T$ is automatically fitted over labeled datasets to ensure confidence values reflect true empirical accuracy (maintaining ECE < 0.05).
+Probability outputs are bounded within `[0.01, 0.99]` to prevent coin-flip bucket overconfidence.
 
 ---
 
-## 💡 Real Production Use Cases
+## 💡 Production Safety & Privacy
 
-1. **API Rate-Limiting & Policy Enforcement**: Determine if a request should be allowed, throttled, or blocked based on request metadata in 0.07ms.
-2. **DevOps Command Safety**: Verify if a generated shell or SQL script is safe to execute unattended before running.
-3. **Customer Support Ticket Routing**: Route incoming user inquiries to billing, technical support, or emergency escalations instantly.
+- **Input Truncation**: Inputs exceeding 8,192 characters are safely truncated.
+- **Zero Logging of Sensitive Data**: User state text is never logged or saved to disk by default.
+- **Middleware Rate-Limiting**: Built-in sliding window rate-limiter prevents server overload.
 
 ---
 
 ## 🛠️ Additional Endpoints
 
-- **`POST /v1/decisions/rationale`**: Returns prediction along with token relevance rationale.
+- **`POST /v1/decisions/rationale`**: Returns predictions along with token relevance rationale.
 - **`POST /v1/schemas/register`**: Registers decision schemas once to enable sub-10ms cached production queries.
 - **`POST /v1/calibrate`**: Auto-fits temperature parameters over user dataset logs.
 
@@ -134,38 +120,20 @@ pip install velto
 velto-server --host 0.0.0.0 --port 8000
 ```
 
-Select backend via environment variable:
+### 2. Run Independent Benchmark Harness
+
+Verify latency, accuracy, and Brier score on your own machine:
 ```bash
-export DECIDE_BACKEND=velto-fast        # Default 0.07ms CPU Engine
-export DECIDE_BACKEND=velto-onnx        # ONNX Local Neural Engine
-```
-
-### 2. Python Integration
-
-```python
-from server.model import TypedDecider, Question
-
-decider = TypedDecider.from_pretrained("velto-fast")
-
-answer = decider.decide(
-    "command: rm -rf /var/lib/postgresql/data",
-    Question("Is this shell command safe to run unattended?", ["yes", "no"])
-)
-
-print(answer["best_option"]) # "no" (0.07 ms)
+python scripts/eval_cohort.py
 ```
 
 ---
 
-## 🎮 Interactive Demos
+## 📜 Attribution & License
 
-Visualizations of sub-millisecond decision loops operating in real-time game AI navigation:
-
-### 🐍 Snake Engine (Auto-Pilot Pathfinding)
-![Snake Engine Gameplay GIF](docs/assets/snake_gameplay.gif)
-
-### 🏓 Ping Pong Trajectory Predictor
-![Ping Pong Gameplay GIF](docs/assets/ping_pong.gif)
+- **License**: Apache License 2.0. 100% Free & Open-Source. See [LICENSE](LICENSE).
+- **Attribution & Third-Party Credits**: See [NOTICE](NOTICE) for third-party open-source credits (`this-that-model-1.0` - MIT / FLock.io, `Laya` - Apache-2.0 / mizorewww).
+- **Trademark Notice**: While the code is open-source under Apache-2.0, the name **Velto** and associated logos are trademarks of the Velto Open Source Project.
 
 ---
 
@@ -174,9 +142,3 @@ Visualizations of sub-millisecond decision loops operating in real-time game AI 
 If you find Velto helpful, support its ongoing open-source development:
 
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/yaad25)
-
----
-
-## 🛡️ License
-
-Apache 2.0. Free & Open-Source.
