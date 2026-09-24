@@ -1,13 +1,13 @@
 """
-Real Browser Flight Search & Booking Automation with Axiom AI.
+Real Browser Flight Search & Booking Automation with Velto.
 Launches Playwright Chrome Browser, searches live flight options,
-evaluates prices with Axiom AI, and selects the cheapest flight in < 5 seconds!
+evaluates prices with Velto, and selects the cheapest flight in < 5 seconds!
 """
 
 import time
 import os
 from playwright.sync_api import sync_playwright
-from server.model import AxiomFastBackend
+from server.model import VeltoFastBackend
 
 def search_and_book_flight():
     print("Launching Real Browser Flight Automation...")
@@ -54,8 +54,8 @@ def search_and_book_flight():
         for f in flights:
             print(f"   • {f['airline']} | {f['price']} | {f['details']}")
 
-        # Step 3: Run Axiom AI Sub-Millisecond Decision Engine
-        engine = AxiomFastBackend()
+        # Step 3: Run Velto Sub-Millisecond Decision Engine
+        engine = VeltoFastBackend()
         t_ai_start = time.perf_counter()
 
         user_intent = "Find absolute cheapest flight under 200 dollars"
@@ -85,8 +85,8 @@ def search_and_book_flight():
 
         print("\n" + "="*50)
         print(f"SELECTED CHEAPEST FLIGHT: {chosen_airline}")
-        print(f"Axiom AI Decision Confidence: {decision['confidence']*100:.1f}%")
-        print(f"Axiom AI Engine Latency: {ai_latency_ms:.3f} ms")
+        print(f"Velto Decision Confidence: {decision['confidence']*100:.1f}%")
+        print(f"Velto Engine Latency: {ai_latency_ms:.3f} ms")
         print(f"TOTAL BROWSER AUTOMATION TIME: {total_time_sec:.2f} seconds")
         print("="*50)
 

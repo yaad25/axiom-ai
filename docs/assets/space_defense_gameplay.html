@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Axiom AI Space Defense Telemetry</title>
+  <title>Velto Space Defense Telemetry</title>
   <style>
     body { margin: 0; background: #05070a; display: flex; justify-content: center; align-items: center; min-h: 100vh; font-family: monospace; }
     canvas { background: #090d12; border: 2px solid #1e293b; border-radius: 12px; }
@@ -110,14 +110,14 @@
       ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(64, 24, 6, 0, Math.PI*2); ctx.fill();
 
       ctx.fillStyle = '#64748b'; ctx.font = '13px monospace'; ctx.textAlign = 'center';
-      ctx.fillText('axiom-space-defense / real recorded decisions', 480, 28);
+      ctx.fillText('velto-space-defense / real recorded decisions', 480, 28);
 
       ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.moveTo(0, 48); ctx.lineTo(960, 48); ctx.stroke();
 
       // Header Row
       ctx.textAlign = 'left'; ctx.font = 'bold 16px monospace'; ctx.fillStyle = '#94a3b8';
-      ctx.fillText('AXIOM AI / LOCAL INTELLIGENCE', 36, 80);
+      ctx.fillText('VELTO AI / LOCAL INTELLIGENCE', 36, 80);
 
       ctx.textAlign = 'right'; ctx.font = 'bold 14px monospace'; ctx.fillStyle = '#38bdf8';
       ctx.fillText('RECORDED RUN • 1x', 924, 80);
@@ -184,7 +184,7 @@
       ctx.fillStyle = '#38bdf8'; ctx.fillRect(36, 505, 310, 4);
 
       // Telemetry Panel
-      ctx.font = 'bold 18px monospace'; ctx.fillStyle = '#f8fafc'; ctx.fillText('Axiom Combat Engine', 420, 130);
+      ctx.font = 'bold 18px monospace'; ctx.fillStyle = '#f8fafc'; ctx.fillText('Velto Combat Engine', 420, 130);
       ctx.font = '13px monospace'; ctx.fillStyle = '#64748b'; ctx.fillText('Sub-1ms Tactical Pilot • DirectML / CUDA', 420, 150);
 
       ctx.font = 'bold 13px monospace'; ctx.fillStyle = '#f8fafc'; ctx.fillText('NEXT MOVE', 420, 190);
@@ -234,12 +234,12 @@
       ctx.fillStyle = '#38bdf8'; ctx.font = 'bold 12px monospace'; ctx.fillText('OFFLINE (0 Cloud Fees)', 580, yOff + 180);
 
       ctx.fillStyle = '#64748b'; ctx.font = '12px monospace'; ctx.fillText('ENGINE', 420, yOff + 200);
-      ctx.fillStyle = '#a855f7'; ctx.font = 'bold 12px monospace'; ctx.fillText('Axiom Fast • Sub-1ms CPU', 580, yOff + 200);
+      ctx.fillStyle = '#a855f7'; ctx.font = 'bold 12px monospace'; ctx.fillText('Velto Fast • Sub-1ms CPU', 580, yOff + 200);
 
       // Bottom Bar
       ctx.strokeStyle = '#1e293b'; ctx.beginPath(); ctx.moveTo(0, 500); ctx.lineTo(960, 500); ctx.stroke();
       ctx.fillStyle = '#64748b'; ctx.font = '12px monospace'; ctx.fillText('SPACE pause    ↑/↓ speed    R reset    Q quit', 36, 524);
-      ctx.textAlign = 'right'; ctx.fillStyle = '#475569'; ctx.fillText('ESTIMATES BY AXIOM AI ENGINE', 924, 524);
+      ctx.textAlign = 'right'; ctx.fillStyle = '#475569'; ctx.fillText('ESTIMATES BY VELTO AI ENGINE', 924, 524);
     }
 
     setInterval(gameStep, 30);

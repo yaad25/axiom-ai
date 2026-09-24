@@ -142,7 +142,7 @@ def soft_rerank(top: list[tuple[Offer, float]], q: ParsedQuery, decide_url: str)
 
     lines = "\n".join(f"{i}: {o.airline}, ${o.price_usd}, {o.stops} stops" for i, (o, _) in enumerate(top))
     body = {
-        "model": "axiom-v1",
+        "model": "velto-v1",
         "state": lines,
         "questions": {
             "best_index": {

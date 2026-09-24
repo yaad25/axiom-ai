@@ -22,10 +22,10 @@ def draw_header(draw, title, subtitle):
     font_md = get_font(15)
     font_title = get_font(18)
     
-    draw.text((480, 24), f"axiom-{title.lower().replace(' ', '-')} / real recorded decisions", fill="#64748b", anchor="mm", font=font_sm)
+    draw.text((480, 24), f"velto-{title.lower().replace(' ', '-')} / real recorded decisions", fill="#64748b", anchor="mm", font=font_sm)
     draw.line([0, 48, 960, 48], fill="#1e293b", width=2)
 
-    draw.text((36, 75), "AXIOM AI / LOCAL INTELLIGENCE", fill="#94a3b8", font=font_title)
+    draw.text((36, 75), "VELTO AI / LOCAL INTELLIGENCE", fill="#94a3b8", font=font_title)
     draw.text((924, 75), "RECORDED RUN • 1x", fill="#22c55e", anchor="ra", font=font_md)
 
     draw.text((36, 120), title.upper(), fill="#f8fafc", font=font_title)
@@ -35,7 +35,7 @@ def draw_footer(draw):
     font_sm = get_font(12)
     draw.line([0, 500, 960, 500], fill="#1e293b", width=2)
     draw.text((36, 520), "SPACE pause    ↑/↓ speed    R reset    Q quit", fill="#64748b", font=font_sm)
-    draw.text((924, 520), "ESTIMATES BY AXIOM AI ENGINE", fill="#475569", anchor="ra", font=font_sm)
+    draw.text((924, 520), "ESTIMATES BY VELTO AI ENGINE", fill="#475569", anchor="ra", font=font_sm)
 
 # 1. GENERATE SNAKE GAMEPLAY GIF
 def generate_snake_gif(output_path):
@@ -106,7 +106,7 @@ def generate_snake_gif(output_path):
         draw.text((280, 455), "035", fill="#64748b", font=font_lg)
 
         # Telemetry Panel
-        draw.text((420, 130), "Axiom Fast Engine", fill="#f8fafc", font=font_md)
+        draw.text((420, 130), "Velto Fast Engine", fill="#f8fafc", font=font_md)
         draw.text((420, 150), "Sub-1ms CPU • Local Intelligence", fill="#64748b", font=font_sm)
 
         draw.text((420, 190), "NEXT MOVE", fill="#f8fafc", font=font_sm)
@@ -178,7 +178,7 @@ def generate_space_defense_gif(output_path):
         draw.text((280, 455), "99.4%", fill="#f8fafc", font=font_lg)
 
         # Telemetry Panel
-        draw.text((420, 130), "Axiom Combat Engine", fill="#f8fafc", font=font_md)
+        draw.text((420, 130), "Velto Combat Engine", fill="#f8fafc", font=font_md)
         draw.text((420, 150), "Sub-1ms Tactical Pilot • DirectML / CUDA", fill="#64748b", font=font_sm)
 
         draw.text((420, 190), "NEXT MOVE", fill="#f8fafc", font=font_sm)
@@ -247,7 +247,7 @@ def generate_turbo_racer_gif(output_path):
         draw.text((290, 455), "000", fill="#4ade80", font=font_lg)
 
         # Telemetry Panel
-        draw.text((420, 130), "Axiom Highway Pilot", fill="#f8fafc", font=font_md)
+        draw.text((420, 130), "Velto Highway Pilot", fill="#f8fafc", font=font_md)
         draw.text((420, 150), "240 KM/H Highway Steering • Sub-1ms CPU", fill="#64748b", font=font_sm)
 
         draw.text((420, 190), "NEXT MOVE", fill="#f8fafc", font=font_sm)
@@ -295,7 +295,7 @@ def generate_ping_pong_gif(output_path):
         # Left Paddle
         draw.rectangle([56, 220, 66, 270], fill="#f43f5e")
 
-        # Right Paddle (Axiom AI)
+        # Right Paddle (Velto)
         py = 220 + int(math.sin(f_idx * 0.4) * 30)
         draw.rectangle([336, py, 346, py + 50], fill="#38bdf8", outline="#93c5fd", width=2)
 
@@ -315,7 +315,7 @@ def generate_ping_pong_gif(output_path):
         draw.text((280, 455), f"{48 + f_idx}", fill="#64748b", font=font_lg)
 
         # Telemetry Panel
-        draw.text((420, 130), "Axiom Rally Predictor", fill="#f8fafc", font=font_md)
+        draw.text((420, 130), "Velto Rally Predictor", fill="#f8fafc", font=font_md)
         draw.text((420, 150), "Hyper-Speed Rally Auto-Pilot • Sub-1ms", fill="#64748b", font=font_sm)
 
         draw.text((420, 190), "NEXT MOVE", fill="#f8fafc", font=font_sm)
@@ -383,7 +383,7 @@ def generate_maze_runner_gif(output_path):
         draw.text((280, 455), "0.03s", fill="#64748b", font=font_lg)
 
         # Telemetry Panel
-        draw.text((420, 130), "Axiom Path Engine", fill="#f8fafc", font=font_md)
+        draw.text((420, 130), "Velto Path Engine", fill="#f8fafc", font=font_md)
         draw.text((420, 150), "BFS Optimal Grid Solver • Sub-1ms CPU", fill="#64748b", font=font_sm)
 
         draw.text((420, 190), "NEXT MOVE", fill="#f8fafc", font=font_sm)

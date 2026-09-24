@@ -1,14 +1,14 @@
-# Contributing to Axiom AI ⚡
+# Contributing to Velto ⚡
 
-Thank you for your interest in contributing to **Axiom AI**! We welcome bug reports, feature requests, documentation improvements, and pull requests.
+Thank you for your interest in contributing to **Velto**! We welcome bug reports, feature requests, documentation improvements, and pull requests.
 
 ## How to Contribute
 
 1. **Fork the Repository**: Create your own copy of the repo on GitHub.
 2. **Clone & Set Up**:
    ```bash
-   git clone https://github.com/yaad25/axiom-ai.git
-   cd axiom-ai
+   git clone https://github.com/yaad25/velto.git
+   cd velto
    pip install -e .
    ```
 3. **Create a Branch**:
@@ -18,11 +18,11 @@ Thank you for your interest in contributing to **Axiom AI**! We welcome bug repo
 4. **Make & Test Your Changes**:
    Run the benchmark suite to ensure no performance or accuracy regressions:
    ```bash
-   python examples/bench.py examples/sample.jsonl --targets axiom
+   python examples/bench.py examples/sample.jsonl --targets velto
    ```
 5. **Submit a Pull Request**: Push your branch to GitHub and open a PR with a clear summary of your changes.
 
 ## Code Style & Standards
 
 - Python code should follow PEP 8 and be typed using type hints (`from __future__ import annotations`).
-- Preserve fast execution times (< 1ms for `axiom-fast` backend).
+- Preserve fast execution times (< 1ms for `velto-fast` backend).

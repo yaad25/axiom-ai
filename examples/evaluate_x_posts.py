@@ -1,24 +1,24 @@
 """
-Evaluate X Post Options using Axiom AI Decision Engine.
-Runs AxiomFastBackend to score which X post copy has the highest viral engagement potential.
+Evaluate X Post Options using Velto Decision Engine.
+Runs VeltoFastBackend to score which X post copy has the highest viral engagement potential.
 """
 
 import json
-from server.model import AxiomFastBackend
+from server.model import VeltoFastBackend
 
 post_options = {
     "Option_1_Direct_Benchmark": (
         "Deploying sub-millisecond decision AI just got a lot easier. While typical decision models "
-        "(like djev) take ~413 ms per step, Axiom AI evaluates 60 FPS Snake Auto-Pilot moves in < 0.1 ms "
+        "(like djev) take ~413 ms per step, Velto evaluates 60 FPS Snake Auto-Pilot moves in < 0.1 ms "
         "on a single CPU core. No GPU required ($0/hr vs $3/hr cloud GPU). Get code, PyPI package, and Docker instructions."
     ),
     "Option_2_Gemma_Style": (
-        "Running Axiom AI (axiom-decision-ai) just got a lot easier. You can now spin up an Axiom "
+        "Running Velto (velto) just got a lot easier. You can now spin up an Velto "
         "API-compatible endpoint locally or on Docker using a single command. Performance is solid: "
         "< 0.1 ms single-step latency and batch execution exceeds 10,000 requests/sec on plain CPU."
     ),
     "Option_3_Punchy_Developer_Hook": (
-        "Why wait 413ms for a decision when you can compute probabilities in 0.07ms? Axiom AI is an open-source "
+        "Why wait 413ms for a decision when you can compute probabilities in 0.07ms? Velto is an open-source "
         "typed-decision engine built for real-time control loops, game bots, and sub-millisecond API routers. "
         "Latency: < 0.1 ms (CPU). Cost: $0 (No GPU needed)."
     ),
@@ -29,7 +29,7 @@ state_prompt = (
     "Select the post that maximizes viral developer engagement, click-through rate, and clear technical benchmark comparison."
 )
 
-engine = AxiomFastBackend()
+engine = VeltoFastBackend()
 
 decision = engine.decide(
     state=state_prompt,

@@ -1,14 +1,14 @@
 """
-Axiom AI Decision Engine Core Backends.
+Velto Decision Engine Core Backends.
 
 High-performance, cross-platform typed decision engine. Native support for
 Linux, Windows, and macOS (CUDA, DirectML, MPS, and CPU).
 
 Backends:
-  - AxiomFastBackend: Zero-dependency BM25/TF-IDF sub-millisecond CPU engine.
-  - AxiomMultilingualFastBackend: 100+ Language Unicode BM25 + subword n-gram CPU engine.
-  - AxiomONNXBackend: ONNX Runtime cross-platform sub-15ms execution (CUDA, DirectML, MPS, CPU).
-  - AxiomTransformerBackend: Zero-shot LLM decoder backend (Qwen2.5 / ModernBERT) single-pass logit scoring.
+  - VeltoFastBackend: Zero-dependency BM25/TF-IDF sub-millisecond CPU engine.
+  - VeltoMultilingualFastBackend: 100+ Language Unicode BM25 + subword n-gram CPU engine.
+  - VeltoONNXBackend: ONNX Runtime cross-platform sub-15ms execution (CUDA, DirectML, MPS, CPU).
+  - VeltoTransformerBackend: Zero-shot LLM decoder backend (Qwen2.5 / ModernBERT) single-pass logit scoring.
   - LayaBackend: Optional compatibility wrapper for legacy Laya weights.
 """
 
@@ -40,7 +40,7 @@ def _softmax(xs: list[float], temperature: float = 1.0) -> list[float]:
 
 
 class Backend(ABC):
-    name: str = "axiom-base"
+    name: str = "velto-base"
 
     @abstractmethod
     def decide(self, state: Any, question: dict) -> dict:
@@ -48,7 +48,7 @@ class Backend(ABC):
 
 
 # --------------------------------------------------------------------------
-# AxiomFastBackend: Sub-millisecond CPU Decision Engine (Standard)
+# VeltoFastBackend: Sub-millisecond CPU Decision Engine (Standard)
 # --------------------------------------------------------------------------
 _WORD_RE = re.compile(r"[a-z0-9']+")
 _STOPWORDS = {"a", "an", "the", "is", "of", "to", "and", "or", "this", "for", "in", "with", "on", "at", "by"}
@@ -105,8 +105,8 @@ def _bm25_score(query_tokens: list[str], doc_tokens: list[str], k1: float = 1.2,
     return score
 
 
-class AxiomFastBackend(Backend):
-    name = "axiom-fast-v1"
+class VeltoFastBackend(Backend):
+    name = "velto-fast-v1"
 
     def decide(self, state: Any, question: dict) -> dict:
         text = _state_to_text(state)
@@ -260,7 +260,7 @@ class AxiomFastBackend(Backend):
 
 
 # --------------------------------------------------------------------------
-# AxiomMultilingualFastBackend: 100+ Language Subword Unicode Engine
+# VeltoMultilingualFastBackend: 100+ Language Subword Unicode Engine
 # --------------------------------------------------------------------------
 _MULTI_WORD_RE = re.compile(r"\w+", re.UNICODE)
 
@@ -276,27 +276,27 @@ def _tokenize_multilingual(text: str) -> list[str]:
     return tokens
 
 
-class AxiomMultilingualFastBackend(Backend):
-    name = "axiom-multilingual-v1"
+class VeltoMultilingualFastBackend(Backend):
+    name = "velto-multilingual-v1"
 
     def __init__(self):
-        self.fast_backend = AxiomFastBackend()
+        self.fast_backend = VeltoFastBackend()
 
     def decide(self, state: Any, question: dict) -> dict:
         return self.fast_backend.decide(state, question)
 
 
 # --------------------------------------------------------------------------
-# AxiomONNXBackend: Cross-Platform DirectML / CUDA / MPS / CPU Engine
+# VeltoONNXBackend: Cross-Platform DirectML / CUDA / MPS / CPU Engine
 # --------------------------------------------------------------------------
-class AxiomONNXBackend(Backend):
-    name = "axiom-onnx-v1"
+class VeltoONNXBackend(Backend):
+    name = "velto-onnx-v1"
 
     def __init__(self, model_path: str | None = None):
         try:
             import onnxruntime as ort
         except ImportError:
-            raise ImportError("AxiomONNXBackend requires onnxruntime: pip install onnxruntime")
+            raise ImportError("VeltoONNXBackend requires onnxruntime: pip install onnxruntime")
 
         available_providers = ort.get_available_providers()
         selected_providers = []
@@ -311,7 +311,7 @@ class AxiomONNXBackend(Backend):
         self.providers = selected_providers
         self.session = None
         self.model_path = model_path
-        self.fallback = AxiomFastBackend()
+        self.fallback = VeltoFastBackend()
 
     def decide(self, state: Any, question: dict) -> dict:
         if self.session is None:
@@ -320,15 +320,15 @@ class AxiomONNXBackend(Backend):
 
 
 # --------------------------------------------------------------------------
-# AxiomTransformerBackend: Single-pass Logit Decoder Engine
+# VeltoTransformerBackend: Single-pass Logit Decoder Engine
 # --------------------------------------------------------------------------
-class AxiomTransformerBackend(Backend):
+class VeltoTransformerBackend(Backend):
     def __init__(self, model_name: str = "Qwen/Qwen2.5-0.5B-Instruct", device: str | None = None):
         import torch
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
         self.torch = torch
-        self.name = f"axiom-transformer:{model_name}"
+        self.name = f"velto-transformer:{model_name}"
         self.device = device or self._detect_device()
         self.tok = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForCausalLM.from_pretrained(model_name).to(self.device)
@@ -429,15 +429,15 @@ class LayaBackend(Backend):
 
 def get_backend(name: str) -> Backend:
     name_clean = name.lower().strip()
-    if name_clean in ("axiom-fast", "axiom-fast-v1", "fast", "heuristic"):
-        return AxiomFastBackend()
-    if name_clean in ("axiom-multilingual", "axiom-multi", "multilingual"):
-        return AxiomMultilingualFastBackend()
-    if name_clean in ("axiom-onnx", "axiom-onnx-v1", "onnx"):
-        return AxiomONNXBackend()
-    if name_clean in ("axiom-transformer", "transformer"):
-        return AxiomTransformerBackend()
-    return AxiomFastBackend()
+    if name_clean in ("velto-fast", "velto-fast-v1", "fast", "heuristic"):
+        return VeltoFastBackend()
+    if name_clean in ("velto-multilingual", "velto-multi", "multilingual"):
+        return VeltoMultilingualFastBackend()
+    if name_clean in ("velto-onnx", "velto-onnx-v1", "onnx"):
+        return VeltoONNXBackend()
+    if name_clean in ("velto-transformer", "transformer"):
+        return VeltoTransformerBackend()
+    return VeltoFastBackend()
 
 
 # --------------------------------------------------------------------------
@@ -457,11 +457,11 @@ class Question:
 
 
 class TypedDecider:
-    def __init__(self, backend_name: str = "axiom-fast"):
+    def __init__(self, backend_name: str = "velto-fast"):
         self.backend = get_backend(backend_name)
 
     @classmethod
-    def from_pretrained(cls, pretrained_name: str = "axiom-fast"):
+    def from_pretrained(cls, pretrained_name: str = "velto-fast"):
         return cls(backend_name=pretrained_name)
 
     def decide(self, state: Any, question: Question | dict) -> dict:

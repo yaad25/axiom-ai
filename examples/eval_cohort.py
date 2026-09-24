@@ -10,12 +10,6 @@ Calculates:
 
 import time
 import math
-import sys
-import os
-
-# Add local project root to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from server.model import get_backend
 
 # 68 Standardized Decision Test Cases

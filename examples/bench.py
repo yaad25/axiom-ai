@@ -50,16 +50,16 @@ TARGETS = {
         "model": os.getenv("JEV_MODEL", "~typesafe/jev-latest"),
         "price_per_m": float(os.getenv("JEV_PRICE_PER_M", "0.042")),
     },
-    "axiom": {
-        "url": os.getenv("AXIOM_URL", "http://localhost:8000/v1/decisions"),
-        "key_env": "AXIOM_KEY",
-        "model": os.getenv("AXIOM_MODEL", "axiom-v1"),
-        "price_per_m": float(os.getenv("AXIOM_PRICE_PER_M", "0.000")),
+    "velto": {
+        "url": os.getenv("VELTO_URL", "http://localhost:8000/v1/decisions"),
+        "key_env": "VELTO_KEY",
+        "model": os.getenv("VELTO_MODEL", "velto-v1"),
+        "price_per_m": float(os.getenv("VELTO_PRICE_PER_M", "0.000")),
     },
     "yours": {
         "url": os.getenv("YOURS_URL", "http://localhost:8000/v1/decisions"),
         "key_env": "YOURS_KEY",
-        "model": os.getenv("YOURS_MODEL", "axiom-v1"),
+        "model": os.getenv("YOURS_MODEL", "velto-v1"),
         "price_per_m": float(os.getenv("YOURS_PRICE_PER_M", "0.000")),
     },
 }

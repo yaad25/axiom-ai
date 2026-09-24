@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Velto - Sub-Millisecond Flight Finder Video Showcase</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+    body { background: #0b0f19; color: #f8fafc; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; overflow: hidden; }
+    
+    .window {
+      width: 900px;
+      height: 540px;
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 40px rgba(56, 189, 248, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    /* Header Bar */
+    .title-bar {
+      height: 48px;
+      background: #1f2937;
+      border-bottom: 1px solid #374151;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      justify-content: space-between;
+    }
+    .dots { display: flex; gap: 8px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+    .title-text { font-size: 14px; font-weight: 600; color: #9ca3af; letter-spacing: 0.5px; }
+
+    /* Main Container */
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      flex: 1;
+      padding: 24px;
+      gap: 24px;
+    }
+
+    /* Left Section: Live Search & Flight Cards */
+    .flight-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .search-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .query-text { font-size: 15px; font-weight: 500; color: #e2e8f0; }
+    .badge-fast { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #059669; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+
+    .card-list { display: flex; flex-direction: column; gap: 12px; }
+    
+    .flight-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+      opacity: 0.3;
+      transform: translateY(10px);
+    }
+
+    .flight-card.active {
+      opacity: 1;
+      transform: translateY(0);
+      border-color: #38bdf8;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+    }
+
+    .flight-card.winner {
+      border-color: #10b981;
+      background: linear-gradient(135deg, #1e293b 0%, #064e3b 100%);
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+    }
+
+    .airline-info { display: flex; flex-direction: column; gap: 4px; }
+    .airline-name { font-size: 16px; font-weight: 700; color: #f8fafc; }
+    .flight-details { font-size: 12px; color: #94a3b8; }
+    .price-tag { font-size: 20px; font-weight: 800; color: #38bdf8; }
+    .winner .price-tag { color: #34d399; }
+
+    /* Right Section: Telemetry & Live Timer */
+    .telemetry-panel {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .stat-group { display: flex; flex-direction: column; gap: 12px; }
+    .stat-title { font-size: 12px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 1px; }
+
+    .timer-display {
+      font-size: 38px;
+      font-weight: 900;
+      font-family: monospace;
+      color: #38bdf8;
+      text-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+    }
+
+    .timer-subtitle { font-size: 12px; color: #94a3b8; }
+
+    /* Probabilities Graph */
+    .bar-container { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+    .prob-bar-label { display: flex; justify-content: space-between; font-size: 12px; color: #cbd5e1; }
+    .prob-track { height: 8px; background: #0f172a; border-radius: 4px; overflow: hidden; }
+    .prob-fill { height: 100%; width: 0%; background: #38bdf8; transition: width 0.5s ease; }
+    .prob-fill-winner { background: #10b981; }
+
+    /* Action Banner */
+    .action-banner {
+      background: #10b981;
+      color: #022c22;
+      font-weight: 800;
+      text-align: center;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      opacity: 0;
+      transform: scale(0.9);
+      transition: all 0.3s ease;
+    }
+    .action-banner.show { opacity: 1; transform: scale(1); }
+
+    /* Replay Button */
+    .replay-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s;
+    }
+    .replay-btn:hover { background: #2563eb; }
+  </style>
+</head>
+<body>
+
+  <div class="window">
+    <div class="title-bar">
+      <div class="dots">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+      </div>
+      <div class="title-text">Velto Engine - Real-Time Flight Decision Showcase</div>
+      <div style="width: 50px;"></div>
+    </div>
+
+    <div class="main-content">
+      <!-- Left: Flight Search Cards -->
+      <div class="flight-panel">
+        <div class="search-box">
+          <span class="query-text">🔍 "Find me cheapest budget flight under $200"</span>
+          <span class="badge-fast">SUB-1MS API</span>
+        </div>
+
+        <div class="card-list">
+          <div class="flight-card" id="card-1">
+            <div class="airline-info">
+              <span class="airline-name">FlyCheap Airways</span>
+              <span class="flight-details">2 Layovers • 14h 20m</span>
+            </div>
+            <span class="price-tag">$180</span>
+          </div>
+
+          <div class="flight-card" id="card-2">
+            <div class="airline-info">
+              <span class="airline-name">AirExpress Direct</span>
+              <span class="flight-details">Non-Stop • 3h 30m</span>
+            </div>
+            <span class="price-tag">$240</span>
+          </div>
+
+          <div class="flight-card" id="card-3">
+            <div class="airline-info">
+              <span class="airline-name">BudgetJet Express</span>
+              <span class="flight-details">1 Layover • 7h 10m</span>
+            </div>
+            <span class="price-tag">$150</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Telemetry Sidebar -->
+      <div class="telemetry-panel">
+        <div class="stat-group">
+          <span class="stat-title">Decision Latency</span>
+          <div class="timer-display" id="timer">0.000 ms</div>
+          <span class="timer-subtitle">Target: &lt; 5,000 ms (Beat by 50,000x)</span>
+        </div>
+
+        <div class="stat-group">
+          <span class="stat-title">Calibrated Probabilities</span>
+          <div class="bar-container">
+            <div>
+              <div class="prob-bar-label"><span>BudgetJet</span><span id="p3-val">0%</span></div>
+              <div class="prob-track"><div class="prob-fill prob-fill-winner" id="p3-bar"></div></div>
+            </div>
+            <div>
+              <div class="prob-bar-label"><span>FlyCheap</span><span id="p1-val">0%</span></div>
+              <div class="prob-track"><div class="prob-fill" id="p1-bar"></div></div>
+            </div>
+            <div>
+              <div class="prob-bar-label"><span>AirExpress</span><span id="p2-val">0%</span></div>
+              <div class="prob-track"><div class="prob-fill" id="p2-bar"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="action-banner" id="banner">
+            ✅ BOOKED IN 0.087 MS!
+          </div>
+          <button class="replay-btn" onclick="startShowcase()">▶ Replay Video Demo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function startShowcase() {
+      // Reset UI
+      document.querySelectorAll('.flight-card').forEach(c => c.className = 'flight-card');
+      document.getElementById('banner').classList.remove('show');
+      document.getElementById('timer').innerText = '0.000 ms';
+      document.getElementById('timer').style.color = '#38bdf8';
+      
+      document.getElementById('p1-bar').style.width = '0%';
+      document.getElementById('p2-bar').style.width = '0%';
+      document.getElementById('p3-bar').style.width = '0%';
+      document.getElementById('p1-val').innerText = '0%';
+      document.getElementById('p2-val').innerText = '0%';
+      document.getElementById('p3-val').innerText = '0%';
+
+      // Step 1: Scan Options (0.3s)
+      setTimeout(() => {
+        document.getElementById('card-1').classList.add('active');
+        document.getElementById('p1-bar').style.width = '18%';
+        document.getElementById('p1-val').innerText = '18.2%';
+      }, 300);
+
+      setTimeout(() => {
+        document.getElementById('card-2').classList.add('active');
+        document.getElementById('p2-bar').style.width = '12%';
+        document.getElementById('p2-val').innerText = '12.8%';
+      }, 600);
+
+      setTimeout(() => {
+        document.getElementById('card-3').classList.add('active');
+        document.getElementById('p3-bar').style.width = '69%';
+        document.getElementById('p3-val').innerText = '69.0%';
+      }, 900);
+
+      // Step 2: Instant Decision Result (1.2s)
+      setTimeout(() => {
+        document.getElementById('card-3').classList.add('winner');
+        document.getElementById('timer').innerText = '0.087 ms';
+        document.getElementById('timer').style.color = '#34d399';
+        document.getElementById('banner').classList.add('show');
+      }, 1200);
+    }
+
+    // Auto Start on Load
+    window.onload = startShowcase;
+  </script>
+</body>
+</html>

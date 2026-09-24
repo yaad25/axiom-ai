@@ -1,10 +1,10 @@
 """
-Sub-Millisecond Cheap Flight Decision & Filter Demo using Axiom AI.
+Sub-Millisecond Cheap Flight Decision & Filter Demo using Velto.
 Evaluates flight options (price, layovers, duration, airlines) in <0.1ms!
 """
 
 import time
-from server.model import AxiomFastBackend
+from server.model import VeltoFastBackend
 
 # Sample incoming flight options from API
 flight_options = [
@@ -16,11 +16,11 @@ flight_options = [
 
 user_query = "Find me the absolute cheapest budget flight under $200"
 
-engine = AxiomFastBackend()
+engine = VeltoFastBackend()
 
 start_time = time.perf_counter()
 
-# Evaluate best flight using Axiom AI Decision Engine
+# Evaluate best flight using Velto Decision Engine
 decision = engine.decide(
     state=user_query,
     question={

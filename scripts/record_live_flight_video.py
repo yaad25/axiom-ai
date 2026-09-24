@@ -8,7 +8,7 @@ import time
 from io import BytesIO
 from PIL import Image
 from playwright.sync_api import sync_playwright
-from server.model import AxiomFastBackend
+from server.model import VeltoFastBackend
 
 output_gif = os.path.abspath("docs/assets/live_flight_booking_video.gif")
 html_path = os.path.abspath("docs/assets/flight_booking_showcase.html")
@@ -39,12 +39,12 @@ with sync_playwright() as p:
         frames.append(Image.open(BytesIO(page.screenshot(type="png"))).convert("RGB"))
         page.wait_for_timeout(80)
 
-    # 2. Extract DOM Cards & Run Axiom AI
+    # 2. Extract DOM Cards & Run Velto
     cards = page.query_selector_all(".flight-card")
     flights = [{"airline": c.query_selector(".airline-name").inner_text(), 
                 "price": c.query_selector(".price-tag").inner_text()} for c in cards]
 
-    engine = AxiomFastBackend()
+    engine = VeltoFastBackend()
     decision = engine.decide(
         state="Find cheapest budget flight under 200 dollars",
         question={"type": "choice", "criteria": {f['airline']: f['price'] for f in flights}}

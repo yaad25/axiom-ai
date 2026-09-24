@@ -1,15 +1,15 @@
 """
-FastAPI 1-Line Middleware Demo with Axiom AI.
+FastAPI 1-Line Middleware Demo with Velto.
 Run with: uvicorn examples.fastapi_middleware_demo:app --reload
 """
 
 from fastapi import FastAPI, Request
-from server.middleware import AxiomFastAPIMiddleware
+from server.middleware import VeltoFastAPIMiddleware
 
-app = FastAPI(title="Axiom AI FastAPI Integration Demo")
+app = FastAPI(title="Velto FastAPI Integration Demo")
 
-# Attach Axiom AI Middleware in 1 Line
-app.add_middleware(AxiomFastAPIMiddleware, backend_name="axiom-fast")
+# Attach Velto Middleware in 1 Line
+app.add_middleware(VeltoFastAPIMiddleware, backend_name="velto-fast")
 
 
 @app.post("/support/route")
@@ -18,7 +18,7 @@ async def route_support_ticket(request: Request):
     user_message = data.get("message", "")
 
     # Access sub-1ms decision backend from request
-    engine = request.scope["axiom_decision"]
+    engine = request.scope["velto_decision"]
 
     decision = engine.decide(
         state=user_message,

@@ -1,14 +1,14 @@
-# Axiom AI — Sub-0.1ms Typed Decision Engine
+# Velto — Sub-0.1ms Typed Decision Engine
 
-**Axiom AI** (`axiom-fast-v1`) is a zero-dependency, sub-millisecond **Typed Decision Engine** designed to replace slow, expensive LLM calls for branch-based software decision making (rate-limiting, security validation, web browser navigation, and game AI).
+**Velto** (`velto-fast-v1`) is a zero-dependency, sub-millisecond **Typed Decision Engine** designed to replace slow, expensive LLM calls for branch-based software decision making (rate-limiting, security validation, web browser navigation, and game AI).
 
-Unlike 2B-parameter models like `flock-io/this-that-model-1.0` (which take **30–31 ms** and require a discrete GPU), **Axiom AI** executes in **0.07 ms** (70 microseconds) on plain CPU with **< 15 MB RAM**.
+Unlike 2B-parameter models like `flock-io/this-that-model-1.0` (which take **30–31 ms** and require a discrete GPU), **Velto** executes in **0.07 ms** (70 microseconds) on plain CPU with **< 15 MB RAM**.
 
 ---
 
 ## ⚡ Quick Specs & Benchmarks
 
-| Feature / Model | FLock (`this-that-model-1.0`) | Laya (`laya-mlx`) | Jev (`djev`) | **Axiom AI (`axiom-fast`)** |
+| Feature / Model | FLock (`this-that-model-1.0`) | Laya (`laya-mlx`) | Jev (`djev`) | **Velto (`velto-fast`)** |
 | :--- | :--- | :--- | :--- | :--- |
 | **Median Latency** | 31.0 ms | 16.6 ms | 413 ms | **0.07 ms (< 0.1ms)** |
 | **Throughput** | ~32 req/sec | 60 req/sec | 2.4 req/sec | **14,285+ req/sec** |
@@ -26,7 +26,7 @@ Compatible with `thisthat` style API syntax:
 from server.model import TypedDecider, Question
 
 # Initialize 0.07ms CPU Typed Decider
-decider = TypedDecider.from_pretrained("axiom-fast")
+decider = TypedDecider.from_pretrained("velto-fast")
 
 # Execute sub-millisecond typed decision
 answer = decider.decide(
@@ -52,5 +52,5 @@ print(answer["best_option"])
 ---
 
 ## ☕ Support Open Source
-- **GitHub**: [github.com/yaad25/axiom-ai](https://github.com/yaad25/axiom-ai)
+- **GitHub**: [github.com/yaad25/velto](https://github.com/yaad25/velto)
 - **Support**: [buymeacoffee.com/yaad25](https://buymeacoffee.com/yaad25)

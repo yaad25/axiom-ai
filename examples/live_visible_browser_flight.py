@@ -1,12 +1,12 @@
 """
-Live Visible Browser Automation for Flight Search using Playwright + Axiom AI.
+Live Visible Browser Automation for Flight Search using Playwright + Velto.
 Launches a VISIBLE Chrome browser window directly on your screen (headless=False)!
 """
 
 import time
 import os
 from playwright.sync_api import sync_playwright
-from server.model import AxiomFastBackend
+from server.model import VeltoFastBackend
 
 def open_live_visible_browser():
     print("Launching Visible Chrome Browser Window on your screen...")

@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "axiom-decision-ai"
+name = "velto"
 version = "1.1.0"
 description = "Universal Cross-Platform Sub-1ms Typed-Decision Engine"
 readme = "README.md"
@@ -32,9 +32,9 @@ transformers = ["torch>=2.0.0", "transformers>=4.30.0"]
 all = ["onnxruntime>=1.15.0", "torch>=2.0.0", "transformers>=4.30.0"]
 
 [project.urls]
-Homepage = "https://github.com/yaad25/axiom-ai"
-Documentation = "https://github.com/yaad25/axiom-ai#readme"
-Repository = "https://github.com/yaad25/axiom-ai"
+Homepage = "https://github.com/yaad25/velto"
+Documentation = "https://github.com/yaad25/velto#readme"
+Repository = "https://github.com/yaad25/velto"
 
 [project.scripts]
-axiom-server = "server.app:app"
+velto-server = "server.app:app"

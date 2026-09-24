@@ -1,5 +1,5 @@
 """
-Axiom AI Server - Universal Typed Decision API Server with Enterprise Add-Ons.
+Velto Server - Universal Typed Decision API Server with Enterprise Add-Ons.
 
 Endpoints:
   - POST /v1/decisions: Standard typed decisions prediction.
@@ -23,11 +23,11 @@ from pydantic import BaseModel, Field
 
 from model import get_backend
 
-BACKEND_NAME = os.getenv("DECIDE_BACKEND", "axiom-fast")
+BACKEND_NAME = os.getenv("DECIDE_BACKEND", "velto-fast")
 API_KEYS = {k for k in os.getenv("DECIDE_API_KEYS", "").split(",") if k}
 
 app = FastAPI(
-    title="Axiom AI Engine",
+    title="Velto Engine",
     description="Universal Cross-Platform Typed-Decision Engine with Enterprise Add-Ons",
     version="1.1.0",
     docs_url="/docs",
@@ -47,7 +47,7 @@ class Question(BaseModel):
 
 
 class DecisionRequest(BaseModel):
-    model: str = "axiom-v1"
+    model: str = "velto-v1"
     state: Any = Field(..., description="String, JSON object, or list")
     questions: dict[str, Question]
 
@@ -78,12 +78,12 @@ def _count_tokens(text: str) -> int:
 @app.get("/")
 def root():
     return {
-        "engine": "Axiom AI",
+        "engine": "Velto",
         "version": "1.1.0",
         "status": "online",
         "active_backend": backend.name,
         "docs_url": "/docs",
-        "message": "Welcome to Axiom AI Engine! Send POST requests to /v1/decisions",
+        "message": "Welcome to Velto Engine! Send POST requests to /v1/decisions",
         "add_ons": {
             "rationale_audit": "POST /v1/decisions/rationale",
             "schema_fast_path": "POST /v1/schemas/register",
@@ -101,13 +101,13 @@ def root():
 @app.get("/v1/decisions")
 def decisions_info():
     return {
-        "message": "Axiom AI decisions endpoint requires a POST request.",
+        "message": "Velto decisions endpoint requires a POST request.",
         "usage": {
             "method": "POST",
             "url": "/v1/decisions",
             "headers": {"Content-Type": "application/json"},
             "example_body": {
-                "model": "axiom-v1",
+                "model": "velto-v1",
                 "state": "I was charged twice, please refund.",
                 "questions": {
                     "department": {
@@ -146,7 +146,7 @@ def decide(req: DecisionRequest, authorization: str | None = Header(default=None
     )
 
     return {
-        "engine": "Axiom AI",
+        "engine": "Velto",
         "model": f"{req.model} ({backend.name})",
         "answers": answers,
         "usage": {"input_tokens": input_tokens, "output_tokens": 0},
@@ -244,7 +244,7 @@ CUSTOMER_USAGE: dict[str, dict] = {}
 @app.get("/v1/billing/plans")
 def get_billing_plans():
     return {
-        "engine": "Axiom AI SaaS Engine",
+        "engine": "Velto SaaS Engine",
         "currency": "USD",
         "plans": API_TIERS
     }
@@ -281,17 +281,17 @@ def get_usage(api_key: str):
 @app.get("/v1/info")
 def info():
     return {
-        "name": "Axiom AI",
+        "name": "Velto",
         "version": "1.1.0",
         "platform": platform.system(),
         "architecture": platform.machine(),
         "active_backend": backend.name,
-        "supported_backends": ["axiom-fast", "axiom-multilingual", "axiom-onnx", "axiom-transformer"],
+        "supported_backends": ["velto-fast", "velto-multilingual", "velto-onnx", "velto-transformer"],
         "add_ons_enabled": ["rationale_audit", "schema_fast_path", "calibration_optimizer", "api_monetization_billing"]
     }
 
 
 @app.get("/healthz")
 def healthz():
-    return {"status": "ok", "engine": "Axiom AI", "backend": backend.name}
+    return {"status": "ok", "engine": "Velto", "backend": backend.name}
 

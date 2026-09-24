@@ -1,5 +1,5 @@
 """
-Axiom AI Neural Model Fine-Tuning & INT8 ONNX Export Pipeline
+Velto Neural Model Fine-Tuning & INT8 ONNX Export Pipeline
 
 Finetunes a compact, ultra-fast transformer decision model (e.g. ModernBERT, MiniLM, Qwen2.5-0.5B)
 on typed decision datasets, then quantizes to INT8 ONNX for sub-5ms local CPU execution.
@@ -39,12 +39,12 @@ def generate_sample_dataset(dataset_path: str):
 def train_and_export(
     dataset_path: str,
     base_model_name: str = "cross-encoder/ms-marco-MiniLM-L-6-v2",
-    output_dir: str = "models/axiom-neural-v1",
+    output_dir: str = "models/velto-neural-v1",
     epochs: int = 3,
     quantize_onnx: bool = True
 ):
     print("=================================================================")
-    print("AXIOM AI NEURAL MODEL TRAINING & INT8 ONNX EXPORT PIPELINE")
+    print("VELTO AI NEURAL MODEL TRAINING & INT8 ONNX EXPORT PIPELINE")
     print("=================================================================")
     print(f"Base Model:      {base_model_name}")
     print(f"Dataset:         {dataset_path}")
@@ -174,14 +174,14 @@ def train_and_export(
     print("TRAINING & EXPORT COMPLETED SUCCESSFULLY!")
     print("You can now load your trained neural model in 1 line:")
     print("  from server.model import TypedDecider")
-    print("  decider = TypedDecider.from_pretrained('models/axiom-neural-v1/pytorch_model')")
+    print("  decider = TypedDecider.from_pretrained('models/velto-neural-v1/pytorch_model')")
     print("=================================================================")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Axiom AI Neural Model Fine-Tuning & Export")
+    parser = argparse.ArgumentParser(description="Velto Neural Model Fine-Tuning & Export")
     parser.add_argument("--dataset", type=str, default="data/sample_decisions.jsonl", help="Path to JSONL decision dataset")
     parser.add_argument("--base_model", type=str, default="cross-encoder/ms-marco-MiniLM-L-6-v2", help="Base transformer checkpoint")
-    parser.add_argument("--output_dir", type=str, default="models/axiom-neural-v1", help="Output model directory")
+    parser.add_argument("--output_dir", type=str, default="models/velto-neural-v1", help="Output model directory")
     parser.add_argument("--epochs", type=int, default=3, help="Number of training epochs")
 
     args = parser.parse_args()

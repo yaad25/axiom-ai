@@ -1,7 +1,7 @@
 {
-  "name": "axiom-decision-ai",
+  "name": "velto",
   "version": "1.0.0",
-  "description": "TypeScript/JavaScript SDK for Axiom AI - Universal Typed-Decision Engine",
+  "description": "TypeScript/JavaScript SDK for Velto - Universal Typed-Decision Engine",
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
@@ -9,7 +9,7 @@
     "prepublishOnly": "npm run build"
   },
   "keywords": [
-    "axiom-ai",
+    "velto",
     "ai",
     "decision-engine",
     "classification",
@@ -17,11 +17,11 @@
     "fastapi",
     "machine-learning"
   ],
-  "author": "Axiom AI Developers",
+  "author": "Velto Developers",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/axiom-ai/axiom-ai.git"
+    "url": "https://github.com/velto/velto.git"
   },
   "devDependencies": {
     "typescript": "^5.9.3"
