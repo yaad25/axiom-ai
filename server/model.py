@@ -110,8 +110,31 @@ class VeltoFastBackend(Backend):
 
     MAX_STATE_LENGTH = 8192
 
+    @staticmethod
+    def _extract_relevant_chunks(text: str, question_text: str, chunk_size: int = 512, max_chunks: int = 4) -> str:
+        """Splits long state into chunks and retains top BM25-relevant chunks matching question tokens."""
+        if len(text) <= chunk_size * max_chunks:
+            return text
+        
+        chunks = [text[i : i + chunk_size] for i in range(0, len(text), chunk_size)]
+        q_tokens = _tokenize(question_text)
+        scored_chunks = []
+        for ch in chunks:
+            ch_tokens = _tokenize(ch)
+            score = _bm25_score(q_tokens, ch_tokens)
+            scored_chunks.append((score, ch))
+        
+        scored_chunks.sort(key=lambda x: x[0], reverse=True)
+        top_chunks = [ch for _, ch in scored_chunks[:max_chunks]]
+        return " ".join(top_chunks)
+
     def decide(self, state: Any, question: dict) -> dict:
         text = _state_to_text(state)
+        q_text = str(question.get("text") or question.get("instructions") or "")
+
+        # Smart Reranking Chunk Selection for Long States
+        if len(text) > 2048:
+            text = self._extract_relevant_chunks(text, q_text)
         if len(text) > self.MAX_STATE_LENGTH:
             text = text[:self.MAX_STATE_LENGTH]
 
@@ -119,6 +142,16 @@ class VeltoFastBackend(Backend):
         qtype = question.get("type", "categorical")
 
         text_lower = text.lower()
+
+        # Computation Detector (Routes complex math / graph search to code tools)
+        if any(k in text_lower for k in ["calculate", "sqrt", "integral", "shortest path graph", "solve math"]):
+            return {
+                "type": "categorical",
+                "best_match": "needs_computation",
+                "best_option": "needs_computation",
+                "confidence": 0.99,
+                "probabilities": {"needs_computation": 0.99, "direct_answer": 0.01}
+            }
 
         # Universal Multi-Domain Structured & Semantic Metrics Evaluator
         structured_bonus: dict[str, float] = {}
@@ -217,11 +250,17 @@ class VeltoFastBackend(Backend):
 
             probs = _softmax(raw_scores, temperature=0.8)
             best_i = max(range(len(options)), key=lambda i: probs[i])
+            sorted_p = sorted(probs, reverse=True)
+            prob_gap = (sorted_p[0] - sorted_p[1]) if len(sorted_p) > 1 else 1.0
+            should_escalate = (prob_gap < 0.15 or probs[best_i] < 0.60)
+
             return {
                 "type": "categorical",
                 "best_match": options[best_i],
                 "best_option": options[best_i],
                 "confidence": round(probs[best_i], 4),
+                "margin_gap": round(prob_gap, 4),
+                "low_confidence_escalate": should_escalate,
                 "probabilities": {str(k): round(v, 4) for k, v in zip(options, probs)},
             }
 
