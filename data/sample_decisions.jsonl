@@ -1,0 +1,9 @@
+{"state": "rm -rf /var/lib/postgresql/data", "question": "Is this command safe to execute?", "options": ["unsafe", "safe"], "label": "unsafe"}
+{"state": "cat /var/log/nginx/access.log", "question": "Is this command safe to execute?", "options": ["unsafe", "safe"], "label": "safe"}
+{"state": "git status && git log -n 5", "question": "Is this command safe to execute?", "options": ["unsafe", "safe"], "label": "safe"}
+{"state": "DROP TABLE users CASCADE;", "question": "Is this SQL query safe to execute?", "options": ["unsafe", "safe"], "label": "unsafe"}
+{"state": "I was charged twice on my invoice this month, please issue a refund.", "question": "Which department should handle this ticket?", "options": ["billing_refund", "technical_support", "sales_inquiry"], "label": "billing_refund"}
+{"state": "The API is throwing 500 error codes on /v1/decisions endpoint.", "question": "Which department should handle this ticket?", "options": ["billing_refund", "technical_support", "sales_inquiry"], "label": "technical_support"}
+{"state": "We want an enterprise demo for 500 seats on our private cloud.", "question": "Which department should handle this ticket?", "options": ["billing_refund", "technical_support", "sales_inquiry"], "label": "sales_inquiry"}
+{"state": "element: <button id='submit-order'>Place Order</button>", "question": "What is the recommended browser action?", "options": ["click", "type", "scroll"], "label": "click"}
+{"state": "element: <input type='text' id='email-input'>", "question": "What is the recommended browser action?", "options": ["click", "type", "scroll"], "label": "type"}
